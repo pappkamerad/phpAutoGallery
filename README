@@ -51,7 +51,6 @@ phpAutoGallery - Readme
   Credits:
   	This work was inspired by Apache::Gallery by Michael Legart
   	A auto-indexing gallery written as a mod_perl module.
-  	I used it for a long time now, but wanted to write and use such a software in PHP.
   	
   Installation:
     Please see the docs/install.txt file.
