@@ -9,8 +9,8 @@ Installation
     - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
       (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
        So overlaying of a logo image may not work correct with this version of PHP)
-    - mod_rewrite
-
+    - apache with mod_rewrite
+    
   Recommendations:
   	- GD >= 2.0.1 (for high-quality resizing of the images)
 
@@ -36,7 +36,7 @@ Installation
        root gallery folder.
        (Example: RewriteRule .* /usr/local/apache/htdocs/mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L])
        --
-       Alternatively you can put the mod_rewrite rules in a your
+       Alternatively you can put the mod_rewrite rules in your
        Apache conf file. (e.g. <VirtualHost> or <Directory> context)
        --
     4. Have a look at the config/config.inc.php file and adjust

@@ -4,7 +4,7 @@ phpAutoGallery - Readme
 
   A auto-indexing image gallery written in PHP
 
-  Version 1.0 BETA - 02/11/2003
+  Version 0.9.0 - 02/11/2003
   http://sourceforge.net/projects/phpautogallery/  
   Copyright (C) 2003 Martin Theimer <pappkamerad@decoded.net>
   
@@ -22,7 +22,7 @@ phpAutoGallery - Readme
     - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
       (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
        So overlaying of a logo image may not work correct with this version of PHP)
-    - mod_rewrite
+    - apache with mod_rewrite
     
   Recommendations:
   	- GD >= 2.0.1 (for high-quality resizing of the images)
