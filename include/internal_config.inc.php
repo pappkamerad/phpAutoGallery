@@ -4,7 +4,7 @@
  *
  * do not change this!
  *
- * Copyright (C) 2003 Martin Theimer
+ * Copyright (C) 2003, 2004 Martin Theimer
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -14,7 +14,7 @@
  *
  * $Id$
  */
-$cfg['version'] = '0.9.5';
+$cfg['version'] = '0.9.6';
 $cfg['copyright'] = 'Copyright &copy; 2003, 2004&nbsp;<a href="mailto:pappkamerad@decoded.net">Martin Theimer</a>';
 
 $cfg['wrapper_path'] = '__phpAutoGallery/wrapper.php';

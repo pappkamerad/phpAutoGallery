@@ -4,6 +4,12 @@ phpAutoGallery
 
 CHANGELOG
 =======
+	0.9.6
+		- changed everything from REDIRECT_URL to REQUEST_URI.
+		  (thanks to kalvan for pointing that out)
+		- changed some more detection stuff, so it should be compatible
+		  with the CGI version of PHP.
+		  
 	0.9.5
 		- changed the htaccess rewrite-rules.
 		  (hopefully to simpler and more compatible ones)
