@@ -136,6 +136,7 @@ function createTmpDirs($tmproot, $fullpath) {
 			}
 			if(!file_exists($absdir)) {
 				mkdir($absdir, 0777);
+				@chmod($absdir, 0777);
 			}
 		}
 	}

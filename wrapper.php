@@ -158,7 +158,7 @@ else {
 						$image->newOutputSize($cfg['thumb_size'], 0, false, true);
 						$image->setResizeMethod($cfg['thumbnail_resize_method']);
 						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
-						chmod($current_tmp_path . $tmpfilename, 0777);
+						@chmod($current_tmp_path . $tmpfilename, 0777);
 						unset($image);
 					}
 					// generate arrays
@@ -338,7 +338,7 @@ else {
 						$image->blend($cfg['logo_position_x'], $cfg['logo_position_y']);
 					}
 					$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
-					chmod($current_tmp_path . $tmpfilename, 0777);
+					@chmod($current_tmp_path . $tmpfilename, 0777);
 					unset($image);
 				}
 				
