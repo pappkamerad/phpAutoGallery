@@ -1,0 +1,10 @@
+$Id$
+
+phpAutoGallery
+
+BUGS
+====
+
+-	apostrophe in folder/picture names does not work correctly.
+	there are issues with escaping of apostrophs in conjunction with internet explorer
+	and javascript. so please do not use apostrophs in names at the moment.

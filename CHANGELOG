@@ -1,0 +1,27 @@
+$Id$
+
+phpAutoGallery
+
+CHANGELOG
+=======
+	0.9.5
+		- changed the htaccess rewrite-rules.
+		  (hopefully to simpler and more compatible ones)
+		- windows compatible
+		- changed charset to UTF-8
+		- added folder- and picture-descriptions
+		- added sorting of folders and pictures
+		  (by name, date, size)
+		- added an admin interface
+		- added quick-navigation select-menu
+		- new directory-layout
+		  (better seperation of templates (themes))
+		- smarty templates_c folder now in $cfg['tmp_path'] too
+		- decoded_green template:
+		  changed tooltips to faked javascript tooltips
+		  (more/better information can be shown)
+		- bugfixes
+	
+	0.9.0
+		initial public release
+  
