@@ -22,11 +22,4 @@
 
 RewriteEngine on
 
-RewriteRule .*__phpAutoGallery__picLoader/.* __phpAutoGallery/loader/picloader.php [L]
-RewriteRule .*__phpAutoGallery__picLoaderTmp/.* __phpAutoGallery/loader/picloadertmp.php [L]
-RewriteRule .*__phpAutoGallery__cssLoader/.* __phpAutoGallery/loader/cssloader.php [L]
-RewriteRule .*__phpAutoGallery__jsLoader/.* __phpAutoGallery/loader/jsloader.php [L]
-RewriteRule .*__phpAutoGallery__videoLoader/.* __phpAutoGallery/loader/videoloader.php [L]
-
-RewriteCond %{REQUEST_URI} !.*__phpAutoGallery/.*
 RewriteRule .* <FULL_GALLERY_PATH>/__phpAutoGallery/wrapper.php [NE,QSA,L]
