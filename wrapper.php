@@ -59,6 +59,11 @@ $template->assign('vVersion', $cfg['version']);
 $template->assign('vCopyright', $cfg['copyright']);
 $template->assign('vGalleryName', $cfg['gallery_name']);
 
+// quicknav redirect
+if (isset($_POST['submit_quicknav'])) {
+	header('Location: '.$_POST['quicknav']);
+}
+
 if (!file_exists($filesystem_pAG_path_abs . $url_request_part)) {
 	$wrongfile = $web_pAG_path_rel . $url_request_part;
 	$template->assign('vNotFoundURL', $wrongfile);
@@ -109,6 +114,7 @@ else {
 		$current_dirs = getDirDirs($filesystem_current_path);
 		$whole_tree = array();
 		getDirTree($filesystem_root_path, $whole_tree);
+
 		$current_dir_bytecount = getDirBytes($filesystem_current_path);
 		$current_dir_bytecounttotal = getDirBytesTotal($filesystem_current_path);
 		

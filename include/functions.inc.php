@@ -103,7 +103,7 @@ function getDirDirs($dirPath) {
 }
 
 function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
-	global $cfg, $web_pAG_path_rel;
+	global $cfg, $web_pAG_path_rel, $web_current_path;
 	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
@@ -114,7 +114,22 @@ function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
                 for ($i = 0; $i < $level; $i++) {
                 	$name_prefix .= "-";
                 }
-                $dirTree[] = array("prefix" => $name_prefix, "level" => $level, "name" => trim($file), "href" => $web_pAG_path_rel . $hrefPath . trim($file));
+                if ($level > 0) {
+                	$name_prefix .= "&nbsp;";
+                }
+                // check if active
+                $active = 0;
+                if ($hrefPath . trim($file) . "/" == $web_current_path) {
+                	$active = 1;
+                }
+                // what style
+                if ($level == 0) {
+                	$style_class = "bold";
+                }
+                else {
+                	$style_class = "normal";
+                }
+                $dirTree[] = array("class" => $style_class, "prefix" => $name_prefix, "active" => $active, "level" => (integer)$level, "name" => utf8_encode(trim($file)), "href" => utf8_encode($web_pAG_path_rel . $hrefPath . trim($file) . "/"));
                 getDirTree($dirPath . trim($file), $dirTree, $level + 1, $hrefPath . trim($file) . '/');
 			}
         }

@@ -47,6 +47,15 @@ td.infotd {
 
 td.infotd2 {
 	font-size:8pt;
+	background-color:#EEEEEE;
+	border-width:1px;
+	border-top-width:0px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.quicknavtd {
+	font-size:8pt;
 	background-color:#F5F5F5;
 	border-width:1px;
 	border-top-width:0px;
@@ -135,4 +144,24 @@ a:hover {
 	border-width:1px;
 	border-style:solid;
 	border-color:#777777;
+}
+
+input {
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+}
+select {
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+	font-style:normal;
+}
+option.normal {
+	color:#000000;
+	background-color:#EEEEEE;
+	font-weight:normal;
+}
+option.bold {
+	color:#5D8E00;
+	background-color:#E0E0E0;
+	font-weight:bold;
 }

@@ -18,6 +18,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<title>{$vGalleryName}&nbsp;::&nbsp;{$vCurrentRequest}</title>
 	<link rel="stylesheet" type="text/css" href="{$vRootPath}__phpAutoGallery__cssLoader/style.css"/>
+	<script src="{$vRootPath}__phpAutoGallery__jsLoader/functions.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -37,5 +38,6 @@
 {/section}
 		</td>
 	</tr>
+
 {/strip}
 {* end of template *}

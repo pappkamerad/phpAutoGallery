@@ -150,6 +150,20 @@
 	{/if}
 	
 	<tr>
+	<form method="post" action="{$vRootPath}">
+	<td align="center" class="quicknavtd">
+		Jump to:&nbsp;
+		<select name="quicknav" onChange="Go(this.form.quicknav.options[this.form.quicknav.options.selectedIndex].value)">
+		{section name=i loop=$arrWholeTree}
+			<option{if $arrWholeTree[i].active == 1} selected{/if} class="{$arrWholeTree[i].class}" value="{$arrWholeTree[i].href}">{$arrWholeTree[i].prefix}{$arrWholeTree[i].name}</option>
+		{/section}
+		</select>
+		&nbsp;<input type="submit" name="submit_quicknav" value="go"/>
+	</td>
+	</form>
+	</tr>
+	
+	<tr>
 		<td align="center" class="infotd2">
 			<b>Directory info:</b><br/>Name: <b>{$vCurrentDirName}</b><br/>Size: <b>{$vCurrentDirBytecount}</b> / <b>{$vCurrentDirBytecountTotal}</b><br/>Subdirectories: <b>{$vCurrentDirDircount}</b><br/>Pictures: <b>{$arrCurrentDirFilecount[1]}</b><br/>Videos: <b>{$arrCurrentDirFilecount[2]}</b><br/>Processing Time: <b>{$vProcessingTime}&nbsp;sec.</b>
 		</td>
