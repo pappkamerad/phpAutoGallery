@@ -2,7 +2,7 @@
 /**
  * functions.inc.php -- functions library for phpAutoGallery
  *
- * Copyright (C) 2003 Martin Theimer
+ * Copyright (C) 2003, 2004 Martin Theimer
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -94,68 +94,242 @@ function getmicrotime() {
 	return ((float)$usec + (float)$sec); 
 }
 
-function getDirBytes($dir) {
-	$line = @exec('du "' . $dir . '" -sbS');
-	if (!$line) {
-		return false;
-	}
-	$line2 = explode("\t", $line);
-	$bytes = $line2[0];
-	$types =  Array("B", "K", "M", "G", "T");
-	$current = 0;
-	while ($bytes > 1024) {
- 		$current++;
- 		$bytes /= 1024;
-	}
-	return round($bytes,2) . $types[$current];
-}
-
-function getDirBytesTotal($dir) {
-	$line = @exec('du "' . $dir . '" -sb');
-	if (!$line) {
-		return false;
-	}
-	$line2 = explode("\t", $line);
-	$bytes = $line2[0];
-	$types =  Array("B", "K", "M", "G", "T");
-	$current = 0;
-	while ($bytes > 1024) {
- 		$current++;
- 		$bytes /= 1024;
-	}
-	return round($bytes,2) . $types[$current];
-}
-
 function getDirFiles($dirPath) {
-	global $cfg;
-    if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
+	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
-    if ($handle = opendir($dirPath)) {
-        while (false !== ($file = readdir($handle))) {
-        	if (!in_array($file, $cfg['hide_file']) && $file != "." && $file != ".." && !is_dir($dirPath.$file)) {
-                	$filesArr[] = trim($file);
-                }
-        }
-        closedir($handle);
-     }  
-     return $filesArr;
+	if ($handle = opendir($dirPath)) {
+		while (false !== ($file = readdir($handle))) {
+			if (isValidFile($file, 1, true) && !is_dir($dirPath.$file)) {
+				$filesArr[] = array (
+					"name" => trim($file),
+					"size" => filesize($dirPath.$file),
+					"timestamp" => filemtime($dirPath.$file)
+				);
+			}
+		}
+		// sort
+		if (is_array($filesArr)) {
+			usort($filesArr, "cmp");
+			return $filesArr;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
+function cmp($a, $b) {
+	global $cfg;
+	$first = 'a';
+	$second = 'b';
+	if ($cfg['sort_order'] == 'DESC') {
+		$first = 'b';
+		$second = 'a';
+	}
+	if ($cfg['sort_value'] == 'size') {
+		if (${$first}['size'] == ${$second}['size']) {
+			return 0;
+		}
+		return (${$first}['size'] < ${$second}['size']) ? -1 : 1;
+	}
+	else if ($cfg['sort_value'] == 'date') {
+		if (${$first}['timestamp'] == ${$second}['timestamp']) {
+			return 0;
+		}
+		return (${$first}['timestamp'] < ${$second}['timestamp']) ? -1 : 1;
+	}
+	else {
+		return strcmp(strtolower(${$first}['name']), strtolower(${$second}['name']));
+	}
+}
+
+function getDirSizeTotal($dir) {
+	$speicher = 0;
+	$dateien = 0;
+	$verz = 0;
+	$pictures = 0;
+	$videos = 0;
+	$others = 0;
+	
+	if ($handle = @opendir($dir)) {
+		while ($file = readdir($handle)) {
+			if($file != "." && $file != "..") {
+				if(@is_dir($dir."/".$file)) {
+					if (isValidFile($file, 2)) {
+						$wert = getDirSizeTotal($dir."/".$file);
+						$speicher +=  $wert[2];
+						$dateien +=  $wert[0];
+						$verz +=  $wert[1];
+						$pictures +=  $wert[3];
+						$videos +=  $wert[4];
+						$others +=  $wert[5];
+						$verz++;
+					}
+				} else {
+					if (isValidFile($file, 1, true)) {
+						$speicher += @filesize($dir."/".$file);
+						$ftype = getFileType($file);
+						if ($ftype == 1) {
+							$pictures++;
+						}
+						else if ($ftype == 2) {
+							$videos++;
+						}
+						else {
+							$others++;
+						}
+						$dateien++;
+					}
+				}
+			}
+		}
+		closedir($handle);
+	}
+	$zurueck[0] = $dateien;
+	$zurueck[1] = $verz;
+	$zurueck[2] = $speicher;
+	$zurueck[3] = $pictures;
+	$zurueck[4] = $videos;
+	$zurueck[5] = $others;
+	
+	return $zurueck;
+} 
+
+function getDirSize($dir) {
+	$speicher = 0;
+	$dateien = 0;
+	$verz = 0;
+	$pictures = 0;
+	$videos = 0;
+	$others = 0;
+	
+	if ($handle = @opendir($dir)) {
+		while ($file = readdir($handle)) {
+			if($file != "." && $file != "..") {
+				if(@is_dir($dir."/".$file)) {
+					if (isValidFile($file, 2)) {
+						$verz++;
+					}
+				} else {
+					if (isValidFile($file, 1, true)) {
+						$speicher += @filesize($dir."/".$file);
+						$ftype = getFileType($file);
+						if ($ftype == 1) {
+							$pictures++;
+						}
+						else if ($ftype == 2) {
+							$videos++;
+						}
+						else {
+							$others++;
+						}
+						$dateien++;
+					}
+				}
+			}
+		}
+		closedir($handle);
+	}
+	$zurueck[0] = $dateien;
+	$zurueck[1] = $verz;
+	$zurueck[2] = $speicher;
+	$zurueck[3] = $pictures;
+	$zurueck[4] = $videos;
+	$zurueck[5] = $others;
+	
+	return $zurueck;
+} 
+
+function humansize($speicher) {
+	for($si = 0; $speicher >= 1024; $speicher /= 1024, $si++);
+	return round($speicher, 1)." ".substr(' kMGT', $si, 1)."B";
+}
+
+function getFileType($file) {
+	global $cfg;
+	$ext = strtolower(substr($file, strrpos($file, '.') +1));
+	if (!isset($cfg['types'][$ext])) {
+		return false;
+	}
+	return $cfg['types'][$ext];
+}
+
+function isValidFile($file, $type = 1, $ext = false) {
+	global $cfg;
+	// type: 1 = files
+	// type: 2 = dirs
+	if ($file != "." && $file != ".." && $file != '__phpAutoGallery') {
+		if ($type == 1) {
+			if (!in_array($file, $cfg['hide_file'])) {
+				if ($ext === false) { // no ext check
+					return true;
+				}
+				else {
+					if ($ext === true) { // all valid extension allowed
+						if (getFileType($file) !== false) {
+							return true;
+						}
+					}
+					else {
+						if (getFileType($file) == $ext) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		else if ($type == 2) {
+			if (!in_array($file, $cfg['hide_folder'])) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 function getDirDirs($dirPath) {
-	global $cfg;
-    if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
+	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
-    if ($handle = opendir($dirPath)) {
-        while (false !== ($file = readdir($handle))) {
-        	if (!in_array($file, $cfg['hide_folder']) && $file != "." && $file != ".." && $file != '__phpAutoGallery' && is_dir($dirPath.$file)) {
-                	$dirArr[] = trim($file);
-                }
-        }
-        closedir($handle);
-     }
-     return $dirArr;
+	if ($handle = opendir($dirPath)) {
+		while (false !== ($file = readdir($handle))) {
+			if (isValidFile($file, 2) && is_dir($dirPath.$file)) {
+				list($file_tc, $dir_tc, $size_tc, $pictures_tc, $videos_tc, $others_tc) = getDirSizeTotal($dirPath.$file);
+				list($file_c, $dir_c, $size_c, $pictures_c, $videos_c, $others_c) = getDirSize($dirPath.$file);
+				$dirArr[] = array (
+					"name" => trim($file),
+					"timestamp" => filemtime($dirPath.$file),
+					"totalsize" => $size_tc,
+					"totalfiles" => $files_tc,
+					"totaldirs" => $dir_tc,
+					"size" => $size_c,
+					"files" => $files_c,
+					"dirs" => $dir_c,
+					"totalpictures" => $pictures_tc,
+					"totalvideos" => $videos_tc,
+					"totalothers" => $others_tc,
+					"pictures" => $pictures_c,
+					"videos" => $videos_c,
+					"others" => $others_c
+				);
+			}
+		}
+		// sort
+		if (is_array($dirArr)) {
+			usort($dirArr, "cmp");
+			return $dirArr;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
 }
 
 function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
@@ -163,34 +337,42 @@ function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
 	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
-    if ($handle = opendir($dirPath)) {
-        while (false !== ($file = readdir($handle))) {
-        	if (!in_array($file, $cfg['hide_folder']) && $file != "." && $file != ".." && $file != '__phpAutoGallery' && is_dir($dirPath.$file)) {
-                $name_prefix = "";
-                for ($i = 0; $i < $level; $i++) {
-                	$name_prefix .= "-";
-                }
-                if ($level > 0) {
-                	$name_prefix .= "&nbsp;";
-                }
-                // check if active
-                $active = 0;
-                if ($hrefPath . trim($file) . "/" == $web_current_path) {
-                	$active = 1;
-                }
-                // what style
-                if ($level == 0) {
-                	$style_class = "bold";
-                }
-                else {
-                	$style_class = "normal";
-                }
-                $dirTree[] = array("class" => $style_class, "prefix" => $name_prefix, "active" => $active, "level" => (integer)$level, "name" => utf8_encode(samba2workaround(trim($file))), "href" => utf8_encode($web_pAG_path_rel . $hrefPath . trim($file) . "/"));
-                getDirTree($dirPath . trim($file), $dirTree, $level + 1, $hrefPath . trim($file) . '/');
-			}
-        }
-        closedir($handle);
-     }
+	
+	$all_valid_items = getDirDirs($dirPath);
+	if ($all_valid_items !== false) {
+		foreach ($all_valid_items as $entry) {
+			$file = $entry['name'];
+            $name_prefix = "";
+            for ($i = 0; $i < $level; $i++) {
+            	$name_prefix .= "-";
+            }
+            if ($level > 0) {
+            	$name_prefix .= "&nbsp;";
+            }
+            // check if active
+            $active = 0;
+            if ($hrefPath . trim($file) . "/" == $web_current_path) {
+            	$active = 1;
+            }
+            // what style
+            if ($level == 0) {
+            	$style_class = "bold";
+            }
+            else {
+            	$style_class = "normal";
+            }
+            $dirTree[] = array(
+            	"class" => $style_class,
+            	"prefix" => $name_prefix,
+            	"active" => $active,
+            	"level" => (integer)$level,
+            	"name" => utf8_encode(samba2workaround(trim($file))),
+            	"filename" => trim($file),
+            	"href" => utf8_encode($web_pAG_path_rel . $hrefPath . trim($file) . "/")
+            );
+            getDirTree($dirPath . trim($file), $dirTree, $level + 1, $hrefPath . trim($file) . '/');
+		}
+	}
 }
 
 function getDirPictureFiles($dirPath) {
