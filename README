@@ -37,13 +37,13 @@ phpAutoGallery - Readme
     and the request will transparently be forwarded to phpAutoGallery.
     
   Current Features:
-    - application fully transparent to gallery-enduser
-    - auto creating and caching of thumbnails and resized images
-    - nice directory listings
-    - configurable view sizes for fullsize-image-display
-    - information about imagefiles and directories
-    - automatically puts a copyright/logo-image on the displayed pictures (if you want)
-    - uses smarty templates. maximum freedom in customizing the layout
+  - Application fully transparent to gallery-enduser
+  - On-the-fly creation and caching of thumbnails, resized fullsize images, directory listings
+  - Configurable view sizes for fullsize-image display
+  - Overlaying of Copyright/Logo images on-the-fly.
+  - Displays information about imagefiles and directories.
+  - Easy to setup.
+  - Fully customizable through the use of Smarty templates.
     
   Download:
     You can get the latest version at http://sourceforge.net/projects/phpautogallery
