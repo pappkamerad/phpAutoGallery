@@ -31,14 +31,14 @@ at http://www.gnu.org/copyleft/gpl.html for more details.
 
 
 ////////////////  GLOBAL TOOPTIP CONFIGURATION  /////////////////////
-var ttBgColor      = '#e6ecff';
+var ttBgColor      = '#FFFFE1';
 var ttBgImg        = '';           // path to background image;
-var ttBorderColor  = '#003399';
+var ttBorderColor  = '#000000';
 var ttBorderWidth  = 1;
 var ttDelay        = 500;          // time span until tooltip shows up [milliseconds]
-var ttFontColor    = '#000066';
-var ttFontFace     = 'arial,helvetica,sans-serif';
-var ttFontSize     = '11px';
+var ttFontColor    = '#000000';
+var ttFontFace     = 'Tahoma,Verdana,Arial,sans-serif';
+var ttFontSize     = '8pt';
 var ttFontWeight   = 'normal';     // alternative is 'bold';
 var ttOffsetX      = 8;            // horizontal offset of left-top corner from mousepointer
 var ttOffsetY      = 19;           // vertical offset                   "
@@ -46,8 +46,8 @@ var ttPadding      = 3;            // spacing between border and content
 var ttShadowColor  = '';
 var ttShadowWidth  = 0;
 var ttTitleColor   = '#ffffff';    // color of caption text
-var ttWidth        = 300;
-var ttAlpha		   = 80;		   // alpha in percent (by pappkamerad)
+var ttWidth        = 200;
+var ttAlpha		   = 85;		   // alpha in percent (by pappkamerad)
 ////////////////////  END OF TOOLTIP CONFIG  ////////////////////////
 
 
