@@ -1,35 +1,38 @@
 <?php
+/**
+ * admin.php -- admin main script
+ *
+ * Copyright (C) 2003, 2004 Martin Theimer
+ * Licensed under the GNU GPL. For full terms see the file COPYING.
+ *
+ * Contact: Martin Theimer <pappkamerad@decoded.net>
+ *
+ * The latest version of phpAutoGallery can be obtained from:
+ * http://sourceforge.net/projects/phpautogallery
+ *
+ * $Id$
+ */
+ 
 // no script timeout. (thumb generation may take some time)
 set_time_limit(0);
 
 // where am i stuff
-//echo $_REQUEST['path']."<br>";
-//echo "newpath: ".$_REQUEST['newpath']."<br>";
 $thisurl = $_SERVER['REDIRECT_URL'];
-//echo "thisurl: ".$thisurl.'<br>';
-if ($cfg['override_root_path']) {
-	$filesystem_root_path = $cfg['override_root_path'];
-}
-else {
-	$filesystem_root_path = str_replace("\\", "/", realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'])) . '/';
-}
+
+$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+
 $filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 $filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 $web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;
 $web_pAG_path_rel = $filesystem_pAG_path_rel;
 
-//echo 'redirect_url: '.$HTTP_SERVER_VARS['REDIRECT_URL'].'<br>';
-//echo 'path: '.$_GET['path'].'<br>';
-
-//echo "web_path-rel: ".$web_pAG_path_rel."<br>";
 if (isset($_REQUEST['path'])) {
 	list($working_path, $d2) = explode("?", str_replace('http://' . $web_pAG_path_abs, '', $_REQUEST['path']));
 	$working_path = '/' . urldecode($working_path);
-	//echo 'workingpath:'. $working_path.'<br>';
 }
 else {
 	if (isset($_POST['submit_quicknav'])) {
-		$_REQUEST['newpath'] = str_replace($thisurl."?newpath=", "", $_POST['quicknav']);
+		list($_REQUEST['newpath']) = explode("&", str_replace($thisurl."?newpath=", "", $_POST['quicknav']));
 	}
 	if ($web_pAG_path_rel != "/") {
 		$working_path = "/" . str_replace($web_pAG_path_rel, "", $_REQUEST['newpath']);
@@ -38,8 +41,6 @@ else {
 		$working_path = $_REQUEST['newpath'];
 	}
 }
-//echo "working_path 1: ".$working_path."<br>";
-//echo "wokringpath: ".$working_path."<br>";
 
 if ($working_path . '/' === $web_pAG_path_rel) {
 	// special root dir without trailing slash
@@ -80,31 +81,20 @@ else {
 
 $filesystem_current_path = $filesystem_pAG_path_abs . utf8_decode(substr($working_path, 1));
 
-
-//echo "working-path: ".$working_path."<br>";
-//echo "web-current-path: ".$web_current_path.'<br>';
-
-//echo 'url-request: '.$url_request_part.'<br>';
 /////////////////////
 
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-echo '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">';
+echo '<html>';
 echo '<head>';
 echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>';
 echo '<title>'.$cfg['gallery_name'].'&nbsp;::&nbsp;admin</title>';
-echo '<link rel="stylesheet" type="text/css" href="'.$web_pAG_path_rel.'__phpAutoGallery__cssLoader/style.css"/>';
-echo '<script src="'.$web_pAG_path_rel.'__phpAutoGallery__jsLoader/functions.js" type="text/javascript"></script>';
+echo '<link rel="stylesheet" type="text/css" href="'.$web_pAG_path_rel.'__phpAutoGallery__cssLoader/css/style.css"/>';
+echo '<script src="'.$web_pAG_path_rel.'__phpAutoGallery__jsLoader/javascript/functions.js" type="text/javascript"></script>';
 echo '</head>';
 echo '<body class="admin">';
 
 if (isset($_POST['submit_admin_login'])) {
 	if ($_POST['username'] == $cfg['admin']['username'] && $_POST['password'] == $cfg['admin']['password']) {
 		$_SESSION['pAG']['__admin'] = true;
-		// reload main window
-		/*echo '<script language="JavaScript">';
-		echo "window.opener.location = window.opener.location + '';";
-        echo "window.close();";
-        echo '</script>';*/
 	}
 	else {
 		$error = "wrong username or password!";
@@ -113,12 +103,12 @@ if (isset($_POST['submit_admin_login'])) {
 
 if (!isset($_SESSION['pAG']['__admin'])) {
 	// not logged in as admin
+	echo '<br><br><br><br><br><br>';
 	if (isset($error)) {
 		echo '<div class="error">';
 		echo $error;
 		echo '</div>';
 	}
-	echo '<br><br><br>';
 	echo '<div align="center">';
 	echo '<form method="post" action="'.$thisurl.'">';
 	echo '<table cellspacing="0">';
@@ -143,7 +133,12 @@ if (!isset($_SESSION['pAG']['__admin'])) {
 	echo '</div>';
 }
 else {
-	// admin here
+	/* admin here */
+	
+	// default action:
+	if (!isset($_REQUEST['action'])) {
+		$_REQUEST['action'] = 'overview';
+	}
 	
 	// what folder
 	echo '<table cellspacing="0" class="adminmenu" border="0" width="100%">';
@@ -160,9 +155,10 @@ else {
 		if ($entry['active'] == 1) {
 			$sel = ' selected';
 		}
-		echo '<option'.$sel.' class="'.$entry['class'].'" value="'.$thisurl.'?newpath='.$entry['href'].'">'.$entry['prefix'].$entry['name'].'</option>';
+		echo '<option'.$sel.' class="'.$entry['class'].'" value="'.$thisurl.'?newpath='.$entry['href'].'&action='.$_REQUEST['action'].'">'.$entry['prefix'].$entry['name'].'</option>';
 	}
 	echo '</select>';
+	echo '<input type="hidden" name="action" value="'.$_REQUEST['action'].'">';
 	echo '<input type="submit" name="submit_quicknav" value="go"/>';
 	if ($_REQUEST['file']) {
 		echo '&nbsp;&nbsp;File:&nbsp;<b>'.$_REQUEST['file'].'</b>';
@@ -172,36 +168,33 @@ else {
 	echo '</tr>';
 	echo '</form>';
 	
-	// default action:
-	if (!isset($_REQUEST['action'])) {
-		$_REQUEST['action'] = 'overview';
-	}
-	
-	// menu
+	/* menu */
 	echo '<tr>';
 	$class = 'adminfield1';
 	if ($_REQUEST['action'] == 'overview') {
 		$class = "adminfield1_active";
 	}
-	echo '<td width="100px" class="'.$class.'"><a href="'.$thisurl.'?action=overview&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">overview</a></td>';
+	echo '<td class="'.$class.'">&nbsp;&nbsp;&nbsp;<a href="'.$thisurl.'?action=overview&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">overview</a>&nbsp;&nbsp;&nbsp;</td>';
 	$class = 'adminfield1';
 	if ($_REQUEST['action'] == 'description') {
 		$class = "adminfield1_active";
 	}
-	echo '<td width="100px" class="'.$class.'"><a href="'.$thisurl.'?action=description&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">description</a></td>';
+	echo '<td class="'.$class.'">&nbsp;&nbsp;&nbsp;<a href="'.$thisurl.'?action=description&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">description</a>&nbsp;&nbsp;&nbsp;</td>';
 	$class = 'adminfield1';
 	if ($_REQUEST['action'] == 'resizing') {
 		$class = "adminfield1_active";
 	}
-	echo '<td width="100px" class="'.$class.'"><a href="'.$thisurl.'?action=resizing&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">resizing</a></td>';
-	echo '<td width="50%" class="adminfield1_last">&nbsp;</td>';
+	echo '<td class="'.$class.'">&nbsp;&nbsp;&nbsp;<a href="'.$thisurl.'?action=resizing&newpath='.$path_for_link.'&file='.$_REQUEST['file'].'">resizing</a>&nbsp;&nbsp;&nbsp;</td>';
+	echo '<td width="100%" class="adminfield1_last">&nbsp;</td>';
 	echo '</tr>';
 	echo '</table>';	
-	// content
-		
+	
+	
+	/* content */
 	if ($_REQUEST['action'] == 'overview') {
+		/* overview */
 		if ($mode == "dir") {
-			$current_files = getDirFiles($filesystem_current_path);
+			$current_files = getDirFiles($filesystem_current_path, 1);
 			
 			if (is_array($current_files)) {
 				foreach ($current_files as $key => $file) {
@@ -215,11 +208,22 @@ else {
 						$tmpfilename = 't' . $cfg['thumb_size'] . '_' . $name . '.jpg';
 						if (!file_exists($current_tmp_path . $tmpfilename)) {
 							// file doesnot exist
-							$current_files[$key]['thumb_exist'] = 0;
+							$current_files[$key]['thumb_exists'] = 0;
 						}
 						else {
 							// file exsists:
 							$current_files[$key]['thumb_exists'] = 1;
+						}
+						
+						// next/previous:
+						$tmpfilename = 't' . $cfg['next_previous_size'] . '_' . $name . '.jpg';
+						if (!file_exists($current_tmp_path . $tmpfilename)) {
+							// file doesnot exist
+							$current_files[$key]['next_previous_exists'] = 0;
+						}
+						else {
+							// file exists
+							$current_files[$key]['next_previous_exists'] = 1;
 						}
 		
 						// resized pictures:
@@ -239,14 +243,16 @@ else {
 				
 				// display the files overview results
 				echo '<div style="padding:10px;">';
-				echo '<table width="99%" cellspacing="0">';
+				echo '<table width="95%" cellspacing="0">';
 				echo '<tr>';
-				echo '<td colspan="15" class="adminlist_head_first"><b>files</b></td>';
+				echo '<td colspan="15" class="adminlist_head_first"><b>image files</b></td>';
 				echo '</tr>';
 				echo '<tr>';
 				echo '<td class="adminlist_first"><i>filename</i></td>';
-				echo '<td class="adminlist" align="center"><i>filetype</i></td>';
 				echo '<td class="adminlist" align="center"><i>thumb</i></td>';
+				if ($cfg['thumb_size'] != $cfg['next_previous_size']) {
+					echo '<td class="adminlist" align="center"><i>next/previous</i></td>';
+				}
 				foreach ($cfg['view_sizes'] as $viewsize) {
 					echo '<td class="adminlist" align="center"><i>'.$viewsize.'px</i></td>';
 				}
@@ -254,11 +260,37 @@ else {
 				
 				foreach ($current_files as $file) {
 					echo '<tr>';
-					echo '<td class="adminlist_first"><a title="edit this picture" href="'.$thisurl.'?action=overview&newpath='.$path_for_link.'&file='.$file['name'].'">'.utf8_encode($file['name']).'</a></td>';
-					echo '<td class="adminlist" align="center">'.$file['filetype'].'</td>';
-					echo '<td class="adminlist" align="center">'.$file['thumb_exists'].'</td>';
+					echo '<td class="adminlist_first"><a title="edit this picture" href="'.$thisurl.'?action=overview&newpath='.$path_for_link.'&file='.utf8_encode($file['name']).'">'.utf8_encode($file['name']).'</a></td>';
+					if ($file['thumb_exists'] == 1) {
+						$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+						$showiconalt = 'generated';
+					}
+					else {
+						$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+						$showiconalt = 'not generated';
+					}
+					echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
+					if ($cfg['thumb_size'] != $cfg['next_previous_size']) {
+						if ($file['next_previous_exists'] == 1) {
+							$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+							$showiconalt = 'generated';
+						}
+						else {
+							$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+							$showiconalt = 'not generated';
+						}
+						echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
+					}
 					foreach ($cfg['view_sizes'] as $viewsize) {
-						echo '<td class="adminlist" align="center">'.$file['resized_exists'][$viewsize].'</td>';
+						if ($file['resized_exists'][$viewsize] == 1) {
+							$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+							$showiconalt = 'generated';
+						}
+						else {
+							$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+							$showiconalt = 'not generated';
+						}
+						echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
 					}	
 					echo '</tr>';
 				}
@@ -269,19 +301,19 @@ else {
 			} // end if array
 			else {
 				echo '<div style="padding:10px;">';
-				echo '<table width="99%" cellspacing="0">';
+				echo '<table width="95%" cellspacing="0">';
 				echo '<tr>';
-				echo '<td colspan="15" class="adminlist_head_first"><b>files</b></td>';
+				echo '<td colspan="15" class="adminlist_head_first"><b>image files</b></td>';
 				echo '</tr>';
 				echo '<tr>';
-				echo '<td colspan="15" class="adminlist_first"><i>no files available</i></td>';
+				echo '<td colspan="15" class="adminlist_first"><i>no image files found</i></td>';
 				echo '</tr>';
 				echo '</div>';
 			}
 		}
 		else {
 			$file = array();
-			$file['name'] = $_REQUEST['file'];
+			$file['name'] = utf8_decode($_REQUEST['file']);
 			$ext = strtolower(substr($file['name'], strrpos($file['name'], '.') +1));
 			$name = substr($file['name'], 0, strrpos($file['name'], '.'));
 			if (($file['filetype'] = getFileType($file['name'])) == 1) {
@@ -292,11 +324,22 @@ else {
 				$tmpfilename = 't' . $cfg['thumb_size'] . '_' . $name . '.jpg';
 				if (!file_exists($current_tmp_path . $tmpfilename)) {
 					// file doesnot exist
-					$file['thumb_exist'] = 0;
+					$file['thumb_exists'] = 0;
 				}
 				else {
 					// file exsists:
 					$file['thumb_exists'] = 1;
+				}
+
+				// next/previous:
+				$tmpfilename = 't' . $cfg['next_previous_size'] . '_' . $name . '.jpg';
+				if (!file_exists($current_tmp_path . $tmpfilename)) {
+					// file doesnot exist
+					$file['next_previous_exists'] = 0;
+				}
+				else {
+					// file exists
+					$file['next_previous_exists'] = 1;
 				}
 
 				// resized pictures:
@@ -315,14 +358,17 @@ else {
 
 			// display the files overview results
 			echo '<div style="padding:10px;">';
-			echo '<table width="99%" cellspacing="0">';
+			echo '<table width="95%" cellspacing="0">';
 			echo '<tr>';
 			echo '<td colspan="15" class="adminlist_head_first"><b>file</b></td>';
 			echo '</tr>';
 			echo '<tr>';
 			echo '<td class="adminlist_first"><i>filename</i></td>';
-			echo '<td class="adminlist" align="center"><i>filetype</i></td>';
+			//echo '<td class="adminlist" align="center"><i>filetype</i></td>';
 			echo '<td class="adminlist" align="center"><i>thumb</i></td>';
+			if ($cfg['thumb_size'] != $cfg['next_previous_size']) {
+				echo '<td class="adminlist" align="center"><i>next/previous</i></td>';
+			}
 			foreach ($cfg['view_sizes'] as $viewsize) {
 				echo '<td class="adminlist" align="center"><i>'.$viewsize.'px</i></td>';
 			}
@@ -330,10 +376,37 @@ else {
 			
 			echo '<tr>';
 			echo '<td class="adminlist_first"><b>'.utf8_encode($file['name']).'</b></td>';
-			echo '<td class="adminlist" align="center">'.$file['filetype'].'</td>';
-			echo '<td class="adminlist" align="center">'.$file['thumb_exists'].'</td>';
+			//echo '<td class="adminlist" align="center">'.$file['filetype'].'</td>';
+			if ($file['thumb_exists'] == 1) {
+				$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+				$showiconalt = 'generated';
+			}
+			else {
+				$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+				$showiconalt = 'not generated';
+			}
+			echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
+			if ($cfg['thumb_size'] != $cfg['next_previous_size']) {
+				if ($file['next_previous_exists'] == 1) {
+					$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+					$showiconalt = 'generated';
+				}
+				else {
+					$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+					$showiconalt = 'not generated';
+				}
+				echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
+			}
 			foreach ($cfg['view_sizes'] as $viewsize) {
-				echo '<td class="adminlist" align="center">'.$file['resized_exists'][$viewsize].'</td>';
+				if ($file['resized_exists'][$viewsize] == 1) {
+					$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_green.png');
+					$showiconalt = 'generated';
+				}
+				else {
+					$showicon = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/status_red.png');
+					$showiconalt = 'not generated';
+				}
+				echo '<td class="adminlist" align="center"><img src="'.$showicon.'"/ alt="'.$showiconalt.'"></td>';
 			}	
 			echo '</tr>';
 			echo '</table>';
@@ -345,10 +418,11 @@ else {
 			
 	} // end overview
 	elseif ($_REQUEST['action'] == 'description') {
-		// change
+		/* description */
 		if (isset($_POST['submit_admin_description_change'])) {
+			// change
 			if (trim($_POST['desc_text']) != "") {
-				$fp = fopen($_POST['desc_filename'], "w");
+				$fp = fopen(utf8_decode($_POST['desc_filename']), "w");
 				if ($fp) {
 					fwrite($fp, $_POST['desc_text']);
 					fclose($fp);
@@ -359,7 +433,7 @@ else {
 			}
 			else {
 				// delete file, because there's no text.
-				@unlink($_POST['desc_filename']);
+				@unlink(utf8_decode($_POST['desc_filename']));
 			}
 		}
 		
@@ -371,18 +445,24 @@ else {
 			$filename_prefix = substr($_REQUEST['file'], 0, strrpos($_REQUEST['file'], '.'));
 			$desc_filename = $filesystem_current_path . $filename_prefix . "." . $cfg['description_extension'];
 		}
-		if (file_exists($desc_filename)) {
+		if (file_exists(utf8_decode($desc_filename))) {
 			$desc_text = "";
-			$desc_all_lines = file($desc_filename);
+			$desc_all_lines = file(utf8_decode($desc_filename));
 			foreach ($desc_all_lines as $line) {
 				$desc_text .= $line;
 			}
 		}
 		echo '<div style="padding:10px;">';
-		echo '<table width="99%" cellspacing="0">';
+		echo '<table width="95%" cellspacing="0">';
 		echo '<form method="post" action="'.$thisurl.'">';
 		echo '<tr>';
-		echo '<td class="adminlist_head_first"><b>description</b></td>';
+		if ($_REQUEST['file'] == "") {
+			$title = 'folder description';
+		}
+		else {
+			$title = 'file description';
+		}
+		echo '<td class="adminlist_head_first"><b>'.$title.'</b></td>';
 		echo '</tr>';
 		echo '<tr>';
 		echo '<td class="adminlist_first">';
@@ -402,6 +482,7 @@ else {
 		echo '</form>';
 	} // end description
 	elseif ($_REQUEST['action'] == 'resizing') {
+		/* resizing tools */
 		if (isset($_POST['submit_admin_resize'])) {
 			$i = 0;
 			if ($_POST['method'] == "1") {
@@ -428,7 +509,10 @@ else {
 			// sub folders
 			if ($_POST['subfolders'] == '1') {
 				$subfoldertree = array();
+				$dummy = $web_pAG_path_rel;
+				$web_pAG_path_rel = '/';
 				getDirTree($filesystem_current_path, $subfoldertree);
+				$web_pAG_path_rel = $dummy;
 				
 				foreach ($subfoldertree as $key => $subfolder) {
 					if ($key != 0) {
@@ -447,7 +531,7 @@ else {
 		}
 		else {
 			echo '<div style="padding:10px;">';
-			echo '<table width="99%" cellspacing="0">';
+			echo '<table width="95%" cellspacing="0">';
 			echo '<form method="post" action="'.$thisurl.'#theend">';
 			echo '<tr>';
 			echo '<td class="adminlist_head_first"><b>resize tools</b></td>';
@@ -468,7 +552,7 @@ else {
 			echo '</select>';
 			echo '<br/>';
 			if ($_REQUEST['file'] == "") {
-				echo '<input type="checkbox" name="subfolders" value="1" checked>for all subfolders too';
+				echo '<input type="checkbox" name="subfolders" value="1">for all subfolders too';
 				echo '<br/>';
 			}
 			echo '<input type="hidden" name="submit_admin_resize" value="1">';

@@ -1,9 +1,23 @@
 <?php
+/**
+ * admin_resize.php -- handles the picture resizing stuff
+ *
+ * Copyright (C) 2003, 2004 Martin Theimer
+ * Licensed under the GNU GPL. For full terms see the file COPYING.
+ *
+ * Contact: Martin Theimer <pappkamerad@decoded.net>
+ *
+ * The latest version of phpAutoGallery can be obtained from:
+ * http://sourceforge.net/projects/phpautogallery
+ *
+ * $Id$
+ */
+ 
 if ($_REQUEST['file'] == "") {
 	$current_files = getDirPictureFiles($whatpath);
 }
 else {
-	$current_files[0] = array('name' => $_REQUEST['file']);
+	$current_files[0] = array('name' => utf8_decode($_REQUEST['file']));
 }
 
 if (is_array($current_files)) {
@@ -53,6 +67,43 @@ if (is_array($current_files)) {
 						flush();
 						$image = new Image_Toolbox($whatpath . $file['name']);
 						$image->newOutputSize((integer)$cfg['thumb_size'], 0, false, true);
+						$image->setResizeMethod($cfg['thumbnail_resize_method']);
+						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
+						@chmod($current_tmp_path . $tmpfilename, 0777);
+						unset($image);
+						echo '&nbsp;<b>done</b><br>';
+						flush();
+					}
+				}
+			}
+			
+			// next/previous images
+			if (in_array("-2", $_POST['what'])) {
+				$tmpfilename = 't' . $cfg['next_previous_size'] . '_' . $name . '.jpg';
+				if (!file_exists($current_tmp_path . $tmpfilename)) {
+					// file doesnot exist
+					echo '<a class="dummy_link" name="line'.$i++.'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+					echo '- creating next/previous image ('.utf8_encode($tmpfilename).')...';
+					echo '<script language="JavaScript">scrolldown('.($i - 1).');</script>';
+					flush();
+					$image = new Image_Toolbox($whatpath . $file['name']);
+					$image->newOutputSize((integer)$cfg['next_previous_size'], 0, false, true);
+					$image->setResizeMethod($cfg['thumbnail_resize_method']);
+					$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
+					@chmod($current_tmp_path . $tmpfilename, 0777);
+					unset($image);
+					echo '&nbsp;<b>done</b><br>';
+					flush();
+				}
+				else {
+					// file exsists:
+					if ($_POST['method'] == '2') {
+						echo '<a class="dummy_link" name="line'.$i++.'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>';
+						echo '- re-creating next/previous image ('.utf8_encode($tmpfilename).')...';
+						echo '<script language="JavaScript">scrolldown('.($i - 1).');</script>';
+						flush();
+						$image = new Image_Toolbox($whatpath . $file['name']);
+						$image->newOutputSize((integer)$cfg['next_previous_size'], 0, false, true);
 						$image->setResizeMethod($cfg['thumbnail_resize_method']);
 						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
 						@chmod($current_tmp_path . $tmpfilename, 0777);
