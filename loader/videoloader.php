@@ -15,12 +15,7 @@
  
 $relpicpath = utf8_decode(str_replace('__phpAutoGallery__videoLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI'])));
 
-if ($cfg['override_root_path']) {
-        $fullpicpath = realpath(substr($cfg['override_root_path'], 0, -1) . $relpicpath);
-}
-else {
-        $fullpicpath = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath);
-}
+$fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
 
 $ext = strtolower(substr($relpicpath, strrpos($relpicpath, '.') +1));
 

@@ -50,9 +50,11 @@ $cfg['allow_original_view'] = true;
 $cfg['jpeg_quality'] = 75;
 
 // logo/copyright image
+// just enter the filename of the logo image
+// and put the logo file in the __phpAutoGallery/img folder
 // leave empty for no logo/copyright
 // for transparency effects please use 24-bit png files
-$cfg['logo_image'] = '';
+$cfg['logo_image'] = 'teeeest.jpg';
 $cfg['logo_position_x'] = 'left +10';
 $cfg['logo_position_y'] = 'bottom -10';
 
@@ -64,7 +66,23 @@ $cfg['thumbnail_resize_method'] = 'resample';
 
 // the number of pictures (thumbnails) that will be shown on a single
 // directory listing page.
-$cfg['pics_per_page'] = 30;
+$cfg['pics_per_page'] = 10;
+
+// sort blaaaaaaa. leave blank for no sorting...
+$cfg['sort_value'] = 'name';
+$cfg['sort_order'] = 'ASC';
+
+// blaaa
+$cfg['timeformat'] = "%Y/%m/%d - %H:%M";
+$cfg['locale'] = 'DE_de';
+
+// blaaa
+$cfg['description_extension'] = 'desc';
+$cfg['folder_description_name'] = '_folder';
+
+// admin stuff
+$cfg['admin']['username'] = 'admin';
+$cfg['admin']['password'] = 'pwd';
 
 // filennames of the different icons used buy phpAutoGallery
 $cfg['icon_folder'] = 'folder.png';
@@ -84,7 +102,10 @@ $cfg['hide_file'] = array(
 	'htaccess-dist'
 );
 
-// set this to override the autodetection of the DOCUMENT_ROOT
-// ONLY change this if you know what you are doing!
-// $cfg['override_root_path'] = '';
+// if you have special characters like german umlaute not displayed correctly
+// and you are using samba 2.x to upload your pictures, then you can try to
+// enable this setting.
+// phpAutoGallery then tries to convert the default samba "cp850"-charset to
+// the "ISO-8859-2"-charset.
+$cfg['samba_2_charset_workaround'] = true;
 ?>

@@ -17,12 +17,7 @@ $relpicpath = str_replace('__phpAutoGallery__jsLoader/', '', urldecode($HTTP_SER
 $cssfile = substr($relpicpath, strrpos($relpicpath, '/'));
 $relpicpath = substr($relpicpath, 0, strrpos($relpicpath, '/')) . '/__phpAutoGallery/javascript' . $cssfile;
 
-if ($cfg['override_root_path']) {
-        $fullpicpath = realpath(substr($cfg['override_root_path'], 0, -1) . $relpicpath);
-}
-else {
-        $fullpicpath = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath);
-}
+$fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';
 

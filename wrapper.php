@@ -42,7 +42,7 @@ else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__phpLoader/')) {
 	include ('php/' . $phpfilename);
 }
 else {
-	// standard wrapper
+	/* standard wrapper */
 	
 	// standard HTTP header
 	header('Content-Type: text/html; charset=utf-8');
@@ -52,7 +52,6 @@ else {
 	if (isset($_SESSION['pAG']['__admin'])) {
 		//echo "admin mode<br>";
 	}
-	/////////////////////////////
 	
 	$pt_start = getmicrotime();
 	
@@ -63,12 +62,7 @@ else {
 	$template->template_dir = './templates/'; 
 	$template->compile_dir = './smarty/templates_c/';
 	
-	if ($cfg['override_root_path']) {
-		$filesystem_root_path = $cfg['override_root_path'];
-	}
-	else {
-		$filesystem_root_path = str_replace("\\", "/", realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'])) . '/';
-	}
+	$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
 	$filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 	$filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 	$web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;
@@ -170,12 +164,7 @@ else {
 			$current_dir_info['date'] = strftime($cfg['timeformat'], filemtime($filesystem_current_path));
 			
 			// description
-			if ($cfg['override_root_path']) {
-				$descfilename = realpath(substr($cfg['override_root_path'], 0, -1) . $web_current_path) . $name . '.' . $cfg['description_extension'];
-			}
-			else {
-				$descfilename = $filesystem_current_path . $cfg['folder_description_name'] . '.' . $cfg['description_extension'];
-			}
+			$descfilename = $filesystem_current_path . $cfg['folder_description_name'] . '.' . $cfg['description_extension'];
 			if (file_exists($descfilename)) {
 				$current_dir_info['description'] = loadTextFile($descfilename);
 			}
@@ -437,12 +426,7 @@ else {
 					$current_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$current_picture['name'] = utf8_encode(samba2workaround($file));
 					// description
-					if ($cfg['override_root_path']) {
-						$descfilename = realpath(substr($cfg['override_root_path'], 0, -1) . $web_current_path) . $name . '.' . $cfg['description_extension'];
-					}
-					else {
-    					$descfilename = $HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $web_pAG_path_rel . $web_current_path . $name . '.' . $cfg['description_extension'];
-					}
+   					$descfilename = substr($filesystem_root_path, 0, -1) . $web_pAG_path_rel . $web_current_path . $name . '.' . $cfg['description_extension'];
 					if (file_exists($descfilename)) {
 						$current_picture['description'] = loadTextFile($descfilename);
 					}
