@@ -32,10 +32,10 @@ $template->template_dir = './templates/';
 $template->compile_dir = './smarty/templates_c/';
 
 if ($cfg['override_root_path']) {
-        $filesystem_root_path = $cfg['override_root_path'];
+	$filesystem_root_path = $cfg['override_root_path'];
 }
 else {
-        $filesystem_root_path = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT']) . '/';
+	$filesystem_root_path = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT']) . '/';
 }
 $filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME']));
 $filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
@@ -47,10 +47,10 @@ if ($HTTP_SERVER_VARS['REDIRECT_URL'] . '/' === $web_pAG_path_rel) {
 	$url_request_part = '';
 }
 elseif ($web_pAG_path_rel == '/') {
-	$url_request_part = substr($HTTP_SERVER_VARS['REDIRECT_URL'], 1);
+	$url_request_part = utf8_decode(substr($HTTP_SERVER_VARS['REDIRECT_URL'], 1));
 }
 else {
-	$url_request_part = str_replace($web_pAG_path_rel, '', $HTTP_SERVER_VARS['REDIRECT_URL']);
+	$url_request_part = utf8_decode(str_replace($web_pAG_path_rel, '', $HTTP_SERVER_VARS['REDIRECT_URL']));
 }
 
 $template->assign('vCurrentRequest', '/' . $url_request_part);
@@ -81,27 +81,27 @@ else {
 			$current_nav[0]['href'] = '';
 		}
 		else {
-			$current_nav[0]['href'] = $web_pAG_path_rel;
+			$current_nav[0]['href'] = utf8_encode($web_pAG_path_rel);
 		}
-		$current_nav[0]['name'] = $cfg['root_folder_name'];
+		$current_nav[0]['name'] = utf8_encode($cfg['root_folder_name']);
 		$current_nav_current['href'] = '';
 		$current_dummy_name = array_pop($nav_dummy);
 		for ($i = 0; isset($nav_dummy[$i]); $i++) {
-			$current_nav[($i + 1)]['name'] = $nav_dummy[$i];
-			$current_nav[($i + 1)]['href'] = $web_pAG_path_rel;
+			$current_nav[($i + 1)]['name'] = utf8_encode($nav_dummy[$i]);
+			$current_nav[($i + 1)]['href'] = utf8_encode($web_pAG_path_rel);
 			for ($u = 0; $u <= $i; $u++) {
-				$current_nav[($i + 1)]['href'] .= $nav_dummy[$u] . '/';
+				$current_nav[($i + 1)]['href'] .= utf8_encode($nav_dummy[$u] . '/');
 			}
 		}
 		if ($url_request_part != '') {
 			$current_nav[($i + 1)]['href'] = '';
-			$current_nav[($i + 1)]['name'] = $current_dummy_name;
+			$current_nav[($i + 1)]['name'] = utf8_encode($current_dummy_name);
 		}
 		if (!$current_dummy_name) {
-			$current_dir_name = $cfg['root_folder_name'];
+			$current_dir_name = utf8_encode($cfg['root_folder_name']);
 		}
 		else {
-			$current_dir_name = $current_dummy_name;
+			$current_dir_name = utf8_encode($current_dummy_name);
 		}
 		
 		// get current directory's files and subdirectories
@@ -114,9 +114,9 @@ else {
 		if (isset($current_dirs[0])) {
 			$i = 0;
 			foreach ($current_dirs as $dir) {
-				$current_dir_dirs[$i]['href'] = $web_pAG_path_rel . $url_request_part . $dir;
-				$current_dir_dirs[$i]['name'] = $dir;
-				$current_dir_dirs[$i]['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_folder'];
+				$current_dir_dirs[$i]['href'] = utf8_encode($web_pAG_path_rel . $url_request_part . $dir);
+				$current_dir_dirs[$i]['name'] = utf8_encode($dir);
+				$current_dir_dirs[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_folder']);
 				$i++;
 			}
 			$current_dir_dircount = sizeof($current_dir_dirs);
@@ -170,9 +170,9 @@ else {
 						if ($current_dir_files[$i]['resized_width'] > $current_dir_files_widest) {
 							$current_dir_files_widest = $current_dir_files[$i]['resized_width'];
 						}
-						$current_dir_files[$i]['href'] = $web_pAG_path_rel . $web_current_path . $file;
-						$current_dir_files[$i]['name'] = $file;
-						$current_dir_files[$i]['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename;
+						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file);
+						$current_dir_files[$i]['name'] = utf8_encode($file);
+						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 						$current_dir_files[$i]['type'] = 1;
 						$i++;
 					}
@@ -181,9 +181,9 @@ else {
 				}
 				elseif ($cfg['types'][$ext] == 2) {
 					// video filetypes
-					$current_dir_files[$i]['href'] = $web_pAG_path_rel . '__phpAutoGallery__videoLoader/' . $web_current_path . $file;
-					$current_dir_files[$i]['name'] = $file;
-					$current_dir_files[$i]['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_video_' . $ext];
+					$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__videoLoader/' . $web_current_path . $file);
+					$current_dir_files[$i]['name'] = utf8_encode($file);
+					$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_video_' . $ext]);
 					$current_dir_files[$i]['type'] = 2;
 					$current_dir_filecount[2]++;
 					$i++;
@@ -191,9 +191,9 @@ else {
 				else {
 					// other filetypes
 					if ($file != '.htaccess') {
-						$current_dir_files[$i]['href'] = $web_pAG_path_rel . '__phpAutoGallery__originalLoader/' . $web_current_path . $file;
-						$current_dir_files[$i]['name'] = $file;
-						$current_dir_files[$i]['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/other.gif';
+						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__originalLoader/' . $web_current_path . $file);
+						$current_dir_files[$i]['name'] = utf8_encode($file);
+						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/other.gif');
 						$current_dir_files[$i]['type'] = 0;
 						$current_dir_filecount[0]++;
 						$i++;
@@ -277,14 +277,14 @@ else {
 			$current_nav[0]['href'] = '';
 		}
 		else {
-			$current_nav[0]['href'] = $web_pAG_path_rel;
+			$current_nav[0]['href'] = utf8_encode($web_pAG_path_rel);
 		}
-		$current_nav[0]['name'] = $cfg['root_folder_name'];
+		$current_nav[0]['name'] = utf8_encode($cfg['root_folder_name']);
 		for ($i = 0; isset($nav_dummy[$i]) && $nav_dummy[$i] !== ''; $i++) {
-			$current_nav[($i + 1)]['name'] = $nav_dummy[$i];
-			$current_nav[($i + 1)]['href'] = $web_pAG_path_rel;
+			$current_nav[($i + 1)]['name'] = utf8_encode($nav_dummy[$i]);
+			$current_nav[($i + 1)]['href'] = utf8_encode($web_pAG_path_rel);
 			for ($u = 0; $u <= $i; $u++) {
-				$current_nav[($i + 1)]['href'] .= $nav_dummy[$u] . '/';
+				$current_nav[($i + 1)]['href'] .= utf8_encode($nav_dummy[$u] . '/');
 			}
 		}
 		
@@ -345,12 +345,12 @@ else {
 				// get picture infos (resized)
 				list($current_picture['resized_width'], $current_picture['resized_height']) = getimagesize($current_tmp_path . $tmpfilename);
 				
-				$current_picture['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename;
-				$current_picture['name'] = $file;
+				$current_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
+				$current_picture['name'] = utf8_encode($file);
 			}
 			else {
-				$current_picture['name'] = $file;
-				$current_picture['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoader/' . $web_current_path . $file;
+				$current_picture['name'] = utf8_encode($file);
+				$current_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/' . $web_current_path . $file);
 				$current_picture['resized_width'] = $current_picture['info']['width'];
 				$current_picture['resized_height'] = $current_picture['info']['height'];
 			}
@@ -361,11 +361,11 @@ else {
 			foreach ($cfg['view_sizes'] as $view_size => $view_width) {
 				if (((isset($_GET['size']) && $_GET['size'] == $view_size) || (!isset($_GET['size']) && $view_size == $cfg['default_view'])) && $_GET['orig'] != 1) {
 					$view_size_links[$i]['href'] = '';
-					$view_size_links[$i]['name'] = $cfg['view_sizes'][$view_size];
+					$view_size_links[$i]['name'] = utf8_encode($cfg['view_sizes'][$view_size]);
 				}
 				else {
-					$view_size_links[$i]['href'] = $web_pAG_path_rel . $web_current_path . $file . '?size=' . $view_size;
-					$view_size_links[$i]['name'] = $cfg['view_sizes'][$view_size];
+					$view_size_links[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?size=' . $view_size);
+					$view_size_links[$i]['name'] = utf8_encode($cfg['view_sizes'][$view_size]);
 				}
 				$i++;
 			}
@@ -378,7 +378,7 @@ else {
 					$view_original_link['allowed'] = true;
 				}
 				else {
-					$view_original_link['href'] = $web_pAG_path_rel . $web_current_path . $file . '?orig=1';
+					$view_original_link['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?orig=1');
 					$view_original_link['name'] = 'original';
 					$view_original_link['allowed'] = true;
 				}
@@ -412,9 +412,9 @@ else {
 					unset($image);
 				}
 				list($prev_picture['resized_width'], $prev_picture['resized_height']) = getimagesize($current_tmp_path . $tmpfilename);
-				$prev_picture['href'] = $web_pAG_path_rel . $web_current_path . $prev_picture_file;
-				$prev_picture['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename;
-				$prev_picture['name'] = $prev_picture_file;
+				$prev_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $prev_picture_file);
+				$prev_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
+				$prev_picture['name'] = utf8_encode($prev_picture_file);
 			}
 			//next
 			if ($current_picture_files_count == ($current_picture_file_position + 1)) {
@@ -438,9 +438,9 @@ else {
 					unset($image);
 				}
 				list($next_picture['resized_width'], $next_picture['resized_height']) = getimagesize($current_tmp_path . $tmpfilename);
-				$next_picture['href'] = $web_pAG_path_rel . $web_current_path . $next_picture_file;
-				$next_picture['img'] = $web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename;
-				$next_picture['name'] = $next_picture_file;
+				$next_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $next_picture_file);
+				$next_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
+				$next_picture['name'] = utf8_encode($next_picture_file);
 			}
 			
 		}

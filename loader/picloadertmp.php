@@ -16,7 +16,7 @@
 require_once ('../config/config.inc.php');
 require_once ('../include/internal_config.inc.php');
 
-$relpicpath = str_replace('__phpAutoGallery__picLoaderTmp/', '', strstr(urldecode($HTTP_SERVER_VARS['REQUEST_URI']), '__phpAutoGallery__picLoaderTmp/'));
+$relpicpath = utf8_decode(str_replace('__phpAutoGallery__picLoaderTmp/', '', strstr(urldecode($HTTP_SERVER_VARS['REQUEST_URI']), '__phpAutoGallery__picLoaderTmp/')));
 $fullpicpath = $cfg['tmp_path'] . $cfg['tmp_pAG_path'] . $relpicpath;
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';

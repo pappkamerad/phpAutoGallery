@@ -16,7 +16,7 @@
 require_once ('../config/config.inc.php');
 require_once ('../include/internal_config.inc.php');
 
-$relpicpath = str_replace('__phpAutoGallery__picLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
+$relpicpath = utf8_decode(str_replace('__phpAutoGallery__picLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI'])));
 
 if ($cfg['override_root_path']) {
         $fullpicpath = realpath(substr($cfg['override_root_path'], 0, -1) . $relpicpath);
