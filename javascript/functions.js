@@ -26,3 +26,13 @@ function Go(x) {
    document.forms[0].elements[0].blur();
  }
 }
+
+function openWindow(win_url, win_name) {
+	window.open(win_url + '?path=' + escape(window.location), win_name, 'menubar=no,width=640,height=450,left=200,top=300,scrollbars=yes');
+}
+
+function scrolldown(i) {
+	if (navigator.appName == "Microsoft Internet Explorer") {
+		window.location.href = "#line" + i;
+	}
+}
