@@ -126,14 +126,14 @@ function getDirPictureFiles($dirPath) {
 	}
 }
 
-function getDirFiles($dirPath) {
+function getDirFiles($dirPath, $typecheck = true) {
 	global $cfg;
 	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
 	if ($handle = opendir($dirPath)) {
 		while (false !== ($file = readdir($handle))) {
-			if (isValidFile($file, 1, true) && !is_dir($dirPath.$file)) {
+			if (isValidFile($file, 1, $typecheck) && !is_dir($dirPath.$file)) {
 				$filesArr[] = array (
 					"name" => trim($file),
 					"size" => filesize($dirPath.$file),
