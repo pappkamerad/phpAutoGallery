@@ -53,6 +53,7 @@ else {
 $template->assign('vCurrentRequest', '/' . $url_request_part);
 $template->assign('vRootPath', $web_pAG_path_rel);
 $template->assign('vVersion', $cfg['version']);
+$template->assign('vCopyright', $cfg['copyright']);
 $template->assign('vGalleryName', $cfg['gallery_name']);
 
 if (!file_exists($filesystem_pAG_path_abs . $url_request_part)) {

@@ -14,7 +14,8 @@
  *
  * $Id$
  */
-$cfg['version'] = '1.0-BETA';
+$cfg['version'] = '0.9.1';
+$cfg['copyright'] = 'Copyright &copy; 2003&nbsp;<a href="mailto:pappkamerad@decoded.net">Martin Theimer</a>';
 
 $cfg['wrapper_path'] = '__phpAutoGallery/wrapper.php';
 $cfg['tmp_pAG_path'] = 'phpAutoGallery/';
