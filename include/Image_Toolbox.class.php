@@ -2,19 +2,26 @@
 /**
  * Image_Toolbox.class.php -- PHP image manipulation class
  *
- * Copyright (C) 2003 Martin Theimer
- * Licensed under the GNU GPL. For full terms see the file COPYING.
- *
- * Contact: Martin Theimer <pappkamerad@decoded.net>
+ * Copyright (C) 2003 Martin Theimer <pappkamerad@decoded.net>
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License <http://www.opensource.org/gpl-license.html>
+ * for more details..
  *
  * The latest version of Image_Toolbox can be obtained from:
- * http://www.decoded.net/projects/image_toolbox
+ * http://www.phpclasses.org/image_toolbox
  *
  * @author Martin Theimer <pappkamerad@decoded.net>
  * @copyright Copyright (C) 2003 Martin Theimer
  * @version 0.9
  * @package Image_Toolbox
- * @link http://www.decoded.net/projects/image_toolbox
+ * @link http://www.phpclasses.org/image_toolbox
  */
  
 // $Id$
@@ -61,7 +68,7 @@ if (!defined('IMAGE_TOOLBOX_BLEND_OVERLAY')) {
  * @author Martin Theimer <pappkamerad@decoded.net>
  * @copyright 2003, Martin Theimer
  * @package Image_Toolbox
- * @link http://www.decoded.net/projects/image_class
+ * @link http://www.phpclasses.org/image_toolbox
  * @version [CVS] $Id$
  */
 class Image_Toolbox {
@@ -155,17 +162,21 @@ class Image_Toolbox {
 		$argc = func_num_args();
 		
 		//get GD information. see what types we can handle
-		$gd_info = $this->_gd_info();
-		preg_match("/\A[\D]*(\d+\.\d+)[\D]*\Z/", $gd_info['GD Version'], $matches);
-		list($this->_gd_version_string, $this->_gd_version) = $matches;
-		if ((float)$this->_gd_version >= 2.0) {
+		$gd_info = function_exists('gd_info') ? gd_info() : $this->_gd_info();
+		preg_match("/\A[\D]*([\d+\.]*)[\D]*\Z/", $gd_info['GD Version'], $matches);
+		list($this->_gd_version_string, $this->_gd_version_number) = $matches;
+		$this->_gd_version = substr($gd_version, 0, strpos($gd_version, '.'));
+		if ($this->_gd_version >= 2) {
 			$this->_imagecreatefunction = 'imagecreatetruecolor';
-			$this->_resize_function = 'imagecopyresampled';
 		} else {
 			$this->_imagecreatefunction = 'imagecreate';
+		}
+		if (function_exists('imagecopyresampled')) {
+			$this->_resize_function = 'imagecopyresampled';
+		} else {
 			$this->_resize_function = 'imagecopyresized';
 		}
-		
+				
 		$this->_gd_ttf = $gd_info['FreeType Support'];
 		$this->_gd_ps = $gd_info['T1Lib Support'];
 		if ($gd_info['GIF Read Support']) {
@@ -215,7 +226,7 @@ class Image_Toolbox {
      */ 
 	function getServerFeatures() {
 		$features = array();
-		$features['gd_version'] = $this->_gd_version;
+		$features['gd_version'] = $this->_gd_version_number;
 		$features['gif'] = $this->_types[1]['supported'];
 		$features['jpg'] = $this->_types[2]['supported'];
 		$features['png'] = $this->_types[3]['supported'];
@@ -505,7 +516,7 @@ class Image_Toolbox {
 					return null;
 				}
 				header ('Content-type: ' . $this->_types[$output_type]['mime']);
-				if ($this->_gd_version >= 2.0) {
+				if ($this->_gd_version >= 2) {
 					if ($this->_img['main']['indexedcolors'] == 0) {
 						$dummy = imagecreatetruecolor($this->_img['main']['width'], $this->_img['main']['height']);
 						imagecopy($dummy, $this->_img['main']['resource'], 0, 0, 0, 0, $this->_img['main']['width'], $this->_img['main']['height']);
@@ -562,7 +573,7 @@ class Image_Toolbox {
 					return null;
 				}
 				header ('Content-type: ' . $this->_types[$output_type]['mime']);
-				if ($this->_gd_version >= 2.0) {
+				if ($this->_gd_version >= 2) {
 					if ($this->_img['main']['indexedcolors'] == 0) {
 						$dummy = imagecreatetruecolor($this->_img['main']['width'], $this->_img['main']['height']);
 						imagecopy($dummy, $this->_img['main']['resource'], 0, 0, 0, 0, $this->_img['main']['width'], $this->_img['main']['height']);
@@ -620,7 +631,7 @@ class Image_Toolbox {
 					trigger_error($this->_error_prefix . 'Imagetype ('.$this->_types[$output_type]['ext'].') not supported for creating/writing.', E_USER_ERROR);
 					return null;
 				}
-				if ($this->_gd_version >= 2.0) {
+				if ($this->_gd_version >= 2) {
 					if ($this->_img['main']['indexedcolors'] == 0) {
 						$dummy = imagecreatetruecolor($this->_img['main']['width'], $this->_img['main']['height']);
 						imagecopy($dummy, $this->_img['main']['resource'], 0, 0, 0, 0, $this->_img['main']['width'], $this->_img['main']['height']);
@@ -675,7 +686,7 @@ class Image_Toolbox {
 					trigger_error($this->_error_prefix . 'Imagetype ('.$this->_types[$output_type]['ext'].') not supported for creating/writing.', E_USER_ERROR);
 					return null;
 				}
-				if ($this->_gd_version >= 2.0) {
+				if ($this->_gd_version >= 2) {
 					if ($this->_img['main']['indexedcolors'] == 0) {
 						$dummy = imagecreatetruecolor($this->_img['main']['width'], $this->_img['main']['height']);
 						imagecopy($dummy, $this->_img['main']['resource'], 0, 0, 0, 0, $this->_img['main']['width'], $this->_img['main']['height']);
@@ -688,7 +699,7 @@ class Image_Toolbox {
 					imagedestroy($dummy);
 				}
 				else {
-					imagegif($this->_img['main']['resource'], $filename);
+					imagepng($this->_img['main']['resource'], $filename);
 				}
 				break;
 				
@@ -722,7 +733,7 @@ class Image_Toolbox {
 			case 2:
 			case '2':
 			case 'resample':
-				if ((float)$this->_gd_version <= 2.0) {
+				if (!function_exists('imagecopyresampled')) {
 					// no error message. just return false.
 					return null;
 				}
@@ -1216,10 +1227,10 @@ class Image_Toolbox {
 	function addText($text, $font, $size, $color, $x, $y, $angle = 0) {
 		global $HTTP_SERVER_VARS;
 		
-		if (substr($font, 0, 1) == '/') {
+		if (substr($font, 0, 1) == DIRECTORY_SEPARATOR) {
 			$prepath = '';
 		} else {
-			$prepath = substr($HTTP_SERVER_VARS['SCRIPT_FILENAME'], 0, strrpos($HTTP_SERVER_VARS['SCRIPT_FILENAME'], '/')) . '/';
+			$prepath = substr($HTTP_SERVER_VARS['SCRIPT_FILENAME'], 0, strrpos($HTTP_SERVER_VARS['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR;
 		}
 		$text = $this->_iso2uni($text);
 		if (is_string($x) || is_string($y)) {
