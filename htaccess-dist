@@ -1,16 +1,6 @@
 # htaccess-dist -- required .htaccess file
 # 
-# This is the required mod_rewrite configuration for phpAutoGallery.
-# Change <FULL_GALLERY_PATH> to the full filesystem path of your 
-# root gallery folder. (and where the __phpAutoGallery folder must
-# be located)
-# Then copy this file to the root path of your gallery and rename
-# it to '.htaccess' (default for the Apache 'AccessFileName' directive)
-#
-# Example:
-# RewriteRule .* /usr/local/apache/htdocs/mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]
-#
-# Copyright (C) 2003 Martin Theimer
+# Copyright (C) 2003, 2004 Martin Theimer
 # Licensed under the GNU GPL. For full terms see the file COPYING.
 #
 # Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -19,7 +9,31 @@
 # http://sourceforge.net/projects/phpautogallery
 #
 # $Id$
-
+#
+# Usage:
+# This is the required mod_rewrite configuration for phpAutoGallery.
+# Change <FULL_GALLERY_WEB_PATH> to the full url path of your 
+# root gallery folder. (and where the __phpAutoGallery folder must
+# be located)
+#
+# Example 1:
+# if your gallery is located here:
+# "http://www.example.com/mygallery"
+# then <FULL_GALLERY_WEB_PATH> would be "/mygallery"
+# and the rewrite-rule would look like this:
+# "RewriteRule .* /mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]"
+#
+# Example 2:
+# or your gallery is located in the webroot directly:
+# "http://www.example.com"
+# then <FULL_GALLERY_WEB_PATH> would be "" (empty)
+# and the rewrite-rule would look like this:
+# "RewriteRule .* /__phpAutoGallery/wrapper.php [NE,QSA,L]"
+#
+# Then copy this file to the root path of your gallery and rename
+# it to '.htaccess' (default for the Apache 'AccessFileName' directive)
+#
 RewriteEngine on
 
-RewriteRule .* <FULL_GALLERY_PATH>/__phpAutoGallery/wrapper.php [NE,QSA,L]
+RewriteCond %{REQUEST_URI} !.*__phpAutoGallery/wrapper\.php.*
+RewriteRule .* <FULL_GALLERY_WEB_PATH>/__phpAutoGallery/wrapper.php [NE,QSA,L]
