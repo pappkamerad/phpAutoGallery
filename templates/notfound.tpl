@@ -12,8 +12,10 @@
  * $Id$
  *}
 {strip}
-  
-page: <b>{$vNotFoundURL}</b> not found!
-
+	<tr>
+		<td align="center" class="maintd">
+			Page: <b>{$vNotFoundURL}</b> not found!
+		</td>
+	</tr>
 {/strip}
 {* end of template *}
