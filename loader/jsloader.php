@@ -15,7 +15,14 @@
  
 $relpicpath = str_replace('__phpAutoGallery__jsLoader/', '__phpAutoGallery/', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
 
-$fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
+if (isset($HTTP_SERVER_VARS['SCRIPT_URL']) && $HTTP_SERVER_VARS['SCRIPT_URL'] != $HTTP_SERVER_VARS['SCRIPT_NAME']) {
+	// CGI
+	$fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_URL'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
+}
+else {
+	// APACHE
+	$fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
+}
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';
 

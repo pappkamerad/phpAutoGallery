@@ -17,9 +17,22 @@
 set_time_limit(0);
 
 // where am i stuff
-$thisurl = $_SERVER['REDIRECT_URL'];
+if (($query_beginning = strpos($HTTP_SERVER_VARS["REQUEST_URI"], '?')) !== false) {
+	$thisurl = urldecode(substr($HTTP_SERVER_VARS["REQUEST_URI"], 0, $query_beginning));
+}
+else {
+	$thisurl = urldecode($HTTP_SERVER_VARS["REQUEST_URI"]);
+}
 
-$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+if (isset($HTTP_SERVER_VARS['SCRIPT_URL']) && $HTTP_SERVER_VARS['SCRIPT_URL'] != $HTTP_SERVER_VARS['SCRIPT_NAME']) {
+	// CGI
+	$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_URL'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+}
+else {
+	// APACHE
+	$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+}
+
 
 $filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 $filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);

@@ -12,7 +12,7 @@
  *
  * $Id$
  */
- 
+
 require_once ('./include/functions.inc.php');
 require_once ('./include/Image_Toolbox.class.php');
 require_once ('./include/internal_config.inc.php');
@@ -21,28 +21,28 @@ require_once ('./config/config.inc.php');
 require_once ('./templates/' . $cfg['which_template'] . '/config/template_config.inc.php');
 
 /* special loaders */
-if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__picLoader/')) {
+if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__picLoader/')) {
 	include ('loader/picloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__picLoaderTmp/')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__picLoaderTmp/')) {
 	include ('loader/picloadertmp.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__cssLoader/')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__cssLoader/')) {
 	include ('loader/cssloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__jsLoader/')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__jsLoader/')) {
 	include ('loader/jsloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__videoLoader/')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__videoLoader/')) {
 	include ('loader/videoloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__admin')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__admin')) {
 	session_start();
 	include ('php/admin.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__phpLoader/')) {
+else if (strstr($HTTP_SERVER_VARS["REQUEST_URI"], '__phpAutoGallery__phpLoader/')) {
 	session_start();
-	list($d1, $d2) = explode("?", $_SERVER["REQUEST_URI"]);
+	list($d1, $d2) = explode("?", $HTTP_SERVER_VARS["REQUEST_URI"]);
 	$phpfilename = substr($d1, (strrpos($d1, "/") + 1));
 	include ('php/' . $phpfilename);
 }
@@ -79,21 +79,35 @@ else {
 	$oldumask = umask(0000);
 
 	// get informations about where and who i am
-	$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+	if (isset($HTTP_SERVER_VARS['SCRIPT_URL']) && $HTTP_SERVER_VARS['SCRIPT_URL'] != $HTTP_SERVER_VARS['SCRIPT_NAME']) {
+		// CGI
+		$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_URL'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+	}
+	else {
+		// APACHE
+		$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
+	}
 	$filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 	$filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 	$web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;
 	$web_pAG_path_rel = $filesystem_pAG_path_rel;
 	
-	if ($HTTP_SERVER_VARS['REDIRECT_URL'] . '/' === $web_pAG_path_rel) {
+	if (($query_beginning = strpos($HTTP_SERVER_VARS["REQUEST_URI"], '?')) !== false) {
+		$server_url_to_test = urldecode(substr($HTTP_SERVER_VARS["REQUEST_URI"], 0, $query_beginning));
+	}
+	else {
+		$server_url_to_test = urldecode($HTTP_SERVER_VARS["REQUEST_URI"]);
+	}
+	
+	if ($server_url_to_test . '/' === $web_pAG_path_rel) {
 		// special root dir without trailing slash
 		$url_request_part = '';
 	}
 	elseif ($web_pAG_path_rel == '/') {
-		$url_request_part = utf8_decode(substr($HTTP_SERVER_VARS['REDIRECT_URL'], 1));
+		$url_request_part = utf8_decode(substr($server_url_to_test, 1));
 	}
 	else {
-		$url_request_part = utf8_decode(str_replace($web_pAG_path_rel, '', $HTTP_SERVER_VARS['REDIRECT_URL']));
+		$url_request_part = utf8_decode(str_replace($web_pAG_path_rel, '', $server_url_to_test));
 	}
 	
 	// quicknav redirect
