@@ -19,7 +19,13 @@ require_once ('../include/internal_config.inc.php');
 $relpicpath = str_replace('__phpAutoGallery__cssLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
 $cssfile = substr($relpicpath, strrpos($relpicpath, '/'));
 $relpicpath = substr($relpicpath, 0, strrpos($relpicpath, '/')) . '/__phpAutoGallery/css' . $cssfile;
-$fullpicpath = $HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath;
+
+if ($cfg['override_root_path']) {
+        $fullpicpath = realpath(substr($cfg['override_root_path'], 0, -1) . $relpicpath);
+}
+else {
+        $fullpicpath = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath);
+}
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';
 

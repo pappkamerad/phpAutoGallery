@@ -17,7 +17,13 @@ require_once ('../config/config.inc.php');
 require_once ('../include/internal_config.inc.php');
 
 $relpicpath = str_replace('__phpAutoGallery__picLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
-$fullpicpath = $HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath;
+
+if ($cfg['override_root_path']) {
+        $fullpicpath = realpath(substr($cfg['override_root_path'], 0, -1) . $relpicpath);
+}
+else {
+        $fullpicpath = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $relpicpath);
+}
 
 $info = getimagesize($fullpicpath);
 if ($info[2] == 1) {

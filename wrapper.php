@@ -28,7 +28,12 @@ $template = new Smarty;
 $template->template_dir = './templates/'; 
 $template->compile_dir = './smarty/templates_c/';
 
-$filesystem_root_path = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT']) . '/';
+if ($cfg['override_root_path']) {
+        $filesystem_root_path = $cfg['override_root_path'];
+}
+else {
+        $filesystem_root_path = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT']) . '/';
+}
 $filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME']));
 $filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 $web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;

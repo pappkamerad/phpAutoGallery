@@ -14,7 +14,7 @@
  */
  
 // cache path. phpAutoGallery will put its resized images here
-// must be writeable by webserver-user!
+// folder must exist and be writeable by webserver-user!
 $cfg['tmp_path'] = '/var/tmp/';
 
 // the name of your gallery
@@ -76,10 +76,15 @@ $cfg['icon_video_wmv'] = 'video.png';
 
 // hide specific foldernames / filenames (case sensitiv)
 $cfg['hide_folder'] = array(
-	'__phpAutoGallery'
+	'__phpAutoGallery',
+	'CVSROOT'
 );
 $cfg['hide_file'] = array(
+	'.htaccess',
 	'htaccess-dist'
 );
 
+// set this to override the autodetection of the DOCUMENT_ROOT
+// ONLY change this if you know what you are doing!
+// $cfg['override_root_path'] = '';
 ?>
