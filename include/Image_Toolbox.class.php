@@ -165,7 +165,7 @@ class Image_Toolbox {
 		$gd_info = function_exists('gd_info') ? gd_info() : $this->_gd_info();
 		preg_match("/\A[\D]*([\d+\.]*)[\D]*\Z/", $gd_info['GD Version'], $matches);
 		list($this->_gd_version_string, $this->_gd_version_number) = $matches;
-		$this->_gd_version = substr($gd_version, 0, strpos($gd_version, '.'));
+		$this->_gd_version = substr($this->_gd_version_number, 0, strpos($this->_gd_version_number, '.'));
 		if ($this->_gd_version >= 2) {
 			$this->_imagecreatefunction = 'imagecreatetruecolor';
 		} else {
