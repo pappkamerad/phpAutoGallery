@@ -21,12 +21,14 @@ Installation
     
   Quick Install:
     1. Untar the distribution (be sure to untar the subdirectories)
-       tar -xzvf phpAutoGallery-x.x.x.tar.gz to the directory in your
+       tar -xzvf phpAutoGallery-x.x.x.tar.gz to a directory named 
+       "__phpAutoGallery" (without the quotes) in your
        webroot where you like the gallery to be.
        The distribution consists of a htaccess file (with mod_rewrite
        rules) and the "__phpAutoGallery" folder. Both must reside in the
        root gallery folder.
-       (Note: DO NOT rename the "__phpAutoGallery" folder)
+       (Note: DO NOT use another name for the "__phpAutoGallery" folder)
+    2. Copy the htaccess-dist file one directory up. (to the root gallery folder)
     2. Rename the htaccess-dist file to ".htaccess"
        (default for the Apache "AccessFileName" directive)
     3. Edit the ".htaccess" file:
