@@ -10,7 +10,7 @@
  * Contact: Martin Theimer <pappkamerad@decoded.net>
  *
  * The latest version of phpAutoGallery can be obtained from:
- * http://www.decoded.net/projects/phpAutoGallery
+ * http://sourceforge.net/projects/phpautogallery
  *
  * $Id$
  */
