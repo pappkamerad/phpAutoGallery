@@ -1,0 +1,66 @@
+$Id$
+
+phpAutoGallery - Readme
+
+  A auto-indexing image gallery written in PHP
+
+  Version 1.0 BETA - 02/11/2003
+  http://sourceforge.net/projects/phpautogallery/  
+  Copyright (C) 2003 Martin Theimer <pappkamerad@decoded.net>
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License <http://www.opensource.org/gpl-license.html>
+  for more details.
+
+  Requirements: 
+    - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
+      (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
+       So overlaying of a logo image may not work correct with this version of PHP)
+    - mod_rewrite
+    
+  Recommendations:
+  	- GD >= 2.0.1 (for high-quality resizing of the images)
+    
+  Summary:
+    Just upload your photos and pictures to a gallery folder
+    on a webserver and phpAutoGallery will do the rest.
+    Point your webbrowser to a path in your gallery:
+    http://yourgallery.example.com/lastvacation
+    or directly to a certain picture:
+    http://yourgallery.example.com/lastvacation/my_babe.jpg
+    and the request will transparently be forwarded to phpAutoGallery.
+    
+  Current Features:
+    - application fully transparent to gallery-enduser
+    - auto creating and caching of thumbnails and resized images
+    - nice directory listings
+    - configurable view sizes for fullsize-image-display
+    - information about imagefiles and directories
+    - automatically puts a copyright/logo-image on the displayed pictures (if you want)
+    - uses smarty templates. maximum freedom in customizing the layout
+    
+  Download:
+    You can get the latest version at http://sourceforge.net/projects/phpautogallery
+    
+  Credits:
+  	This work was inspired by Apache::Gallery by Michael Legart
+  	A auto-indexing gallery written as a mod_perl module.
+  	I used it for a long time now, but wanted to write and use such a software in PHP.
+  	
+  Installation:
+    Please see the docs/install.txt file.
+  
+  Customizing:
+    Please see the docs/templates.txt file.
+  
+  ChangeLog:
+    Please see the Changelog file.
+  
+  Cheers,
+	Martin Theimer
