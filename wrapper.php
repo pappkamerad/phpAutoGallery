@@ -16,26 +16,31 @@
 require_once ('./include/functions.inc.php');
 require_once ('./include/Image_Toolbox.class.php');
 require_once ('./include/internal_config.inc.php');
+require_once ('./include/smarty/Smarty.class.php');
 require_once ('./config/config.inc.php');
-require_once ('./smarty/Smarty.class.php');
+require_once ('./templates/' . $cfg['which_template'] . '/config/template_config.inc.php');
 
-// Special Loaders
-if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__picLoader/')) {
+/* special loaders */
+if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__picLoader/')) {
 	include ('loader/picloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__picLoaderTmp/')) {
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__picLoaderTmp/')) {
 	include ('loader/picloadertmp.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__cssLoader/')) {
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__cssLoader/')) {
 	include ('loader/cssloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__jsLoader/')) {
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__jsLoader/')) {
 	include ('loader/jsloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__videoLoader/')) {
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__videoLoader/')) {
 	include ('loader/videoloader.php');
 }
-else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__phpLoader/')) {
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__admin')) {
+	session_start();
+	include ('php/admin.php');
+}
+else if (strstr($_SERVER["REQUEST_URI"], '__phpAutoGallery__phpLoader/')) {
 	session_start();
 	list($d1, $d2) = explode("?", $_SERVER["REQUEST_URI"]);
 	$phpfilename = substr($d1, (strrpos($d1, "/") + 1));
@@ -49,8 +54,12 @@ else {
 	
 	// session stuff
 	session_start();
-	if (isset($_SESSION['pAG']['__admin'])) {
-		//echo "admin mode<br>";
+	/*if (isset($_SESSION['pAG']['__admin'])) {
+	}*/
+	
+	// set locale
+	if ($cfg['locale']) {
+		setlocale(LC_TIME, $cfg['locale']);
 	}
 	
 	$pt_start = getmicrotime();
@@ -58,18 +67,23 @@ else {
 	// no script timeout. (thumb generation may take some time)
 	set_time_limit(0);
 	
+	// init smarty object, settings
 	$template = new Smarty;
-	$template->template_dir = './templates/'; 
-	$template->compile_dir = './smarty/templates_c/';
-	
+	$template->template_dir = './templates/' . $cfg['which_template'] . '/'; 
+	if (!file_exists($cfg['tmp_path'] . 'phpAutoGallery/' . $HTTP_SERVER_VARS['SERVER_NAME'] . '_smarty_compile/')) {
+		createTmpDirs($cfg['tmp_path'], 'phpAutoGallery/' . $HTTP_SERVER_VARS['SERVER_NAME'] . '_smarty_compile/');
+	}
+	$template->compile_dir = $cfg['tmp_path'] . 'phpAutoGallery/' . $HTTP_SERVER_VARS['SERVER_NAME'] . '_smarty_compile/';
+	$template->_file_perms = 0666;
+	$template->_dir_perms  = 0777;
+	$oldumask = umask(0000);
+
+	// get informations about where and who i am
 	$filesystem_root_path = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "/", $HTTP_SERVER_VARS['SCRIPT_FILENAME']);
 	$filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 	$filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 	$web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;
 	$web_pAG_path_rel = $filesystem_pAG_path_rel;
-	
-	//echo "root_path:".$filesystem_root_path."<br>";
-	//echo 'redirect_url: '.$HTTP_SERVER_VARS['REDIRECT_URL'].'<br>';
 	
 	if ($HTTP_SERVER_VARS['REDIRECT_URL'] . '/' === $web_pAG_path_rel) {
 		// special root dir without trailing slash
@@ -82,23 +96,31 @@ else {
 		$url_request_part = utf8_decode(str_replace($web_pAG_path_rel, '', $HTTP_SERVER_VARS['REDIRECT_URL']));
 	}
 	
-	$template->assign('vCurrentRequest', '/' . $url_request_part);
-	$template->assign('vRootPath', $web_pAG_path_rel);
-	$template->assign('vVersion', $cfg['version']);
-	$template->assign('vCopyright', $cfg['copyright']);
-	$template->assign('vGalleryName', $cfg['gallery_name']);
-	
 	// quicknav redirect
 	if (isset($_POST['submit_quicknav'])) {
 		header('Location: '.$_POST['quicknav']);
 	}
 	
+	//global assigns
+	$template->assign('vCurrentRequest', '/' . utf8_encode(samba2workaround($url_request_part)));
+	$template->assign('vRootPath', $web_pAG_path_rel);
+	$template->assign('vVersion', $cfg['version']);
+	$template->assign('vCopyright', $cfg['copyright']);
+	$template->assign('vGalleryName', $cfg['gallery_name']);
+	$template->assign('vTemplateName', $cfg['which_template']);
+	$template->assign('vJavascriptPath', $web_pAG_path_rel . '__phpAutoGallery__jsLoader/templates/' . $cfg['which_template'] . '/javascript');
+	$template->assign('vCSSPath', $web_pAG_path_rel . '__phpAutoGallery__cssLoader/templates/' . $cfg['which_template'] . '/css');
+	$template->assign('arrTemplateConfig', $cfg['template']);
+	
+	// 404 file not found
 	if (!file_exists($filesystem_pAG_path_abs . $url_request_part)) {
 		$wrongfile = $web_pAG_path_rel . $url_request_part;
 		$template->assign('vNotFoundURL', $wrongfile);
 		$template->assign('internContentTemplate', 'notfound.tpl');
 	} 
 	else {
+		// file found, so process the request
+		
 		if (!is_file($filesystem_pAG_path_abs . $url_request_part)) {
 			// directory list mode
 			
@@ -107,7 +129,6 @@ else {
 				$url_request_part .= '/';
 			}
 			$filesystem_current_path = $filesystem_pAG_path_abs . $url_request_part;
-			//echo 'file: '.$filesystem_current_path.'<br>';
 			$web_current_path = $url_request_part;
 	
 			// get navigation path array
@@ -175,7 +196,7 @@ else {
 				foreach ($current_dirs as $dir) {
 					$current_dir_dirs[$i]['href'] = utf8_encode($web_pAG_path_rel . $url_request_part . $dir['name']);
 					$current_dir_dirs[$i]['name'] = utf8_encode(samba2workaround($dir['name']));
-					$current_dir_dirs[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_folder']);
+					$current_dir_dirs[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/templates/' . $cfg['which_template'] . '/img/' . $cfg['template']['icon']['folder']);
 					$current_dir_dirs[$i]['totalsize'] = humansize($dir['totalsize']);
 					$current_dir_dirs[$i]['totalfiles'] = $dir['totalfiles'];
 					$current_dir_dirs[$i]['totaldirs'] = $dir['totaldirs'];
@@ -257,7 +278,7 @@ else {
 						// video filetypes
 						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__videoLoader/' . $web_current_path . $file['name']);
 						$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file['name']));
-						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_video_' . $ext]);
+						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/templates/' . $cfg['which_template'] . '/img/' . $cfg['template']['icon'][$ext]);
 						$current_dir_files[$i]['size'] = humansize($file['size']);
 						$current_dir_files[$i]['date'] = strftime($cfg['timeformat'], $file['timestamp']);
 						$current_dir_files[$i]['type'] = 2;
@@ -378,7 +399,8 @@ else {
 			
 				// get picture infos (original)
 				list($current_picture['info']['width'], $current_picture['info']['height']) = getimagesize($filesystem_pAG_path_abs . $url_request_part);
-				$current_picture['info']['filesize'] = filesize_human($filesystem_pAG_path_abs . $url_request_part);
+				$current_picture['info']['filesize'] = humansize(filesize($filesystem_pAG_path_abs . $url_request_part));
+				$current_picture['info']['date'] = strftime($cfg['timeformat'], filemtime($filesystem_pAG_path_abs . $url_request_part));
 							
 				// determine display width
 				if (isset($_GET['size'])) {
@@ -489,7 +511,7 @@ else {
 					}
 					$tmpfilename = 't' . $cfg['next_previous_size'] . '_' . $prev_name . '.jpg';
 					if (!file_exists($current_tmp_path . $tmpfilename)) {
-						$image = new Image_Toolbox($filesystem_current_path . $file);
+						$image = new Image_Toolbox($filesystem_current_path . $prev_picture_file);
 						$image->newOutputSize($cfg['next_previous_size'], 0, false, true);
 						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
 						unset($image);
@@ -498,6 +520,8 @@ else {
 					$prev_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $prev_picture_file);
 					$prev_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$prev_picture['name'] = utf8_encode(samba2workaround($prev_picture_file));
+					$prev_picture['size'] = humansize($current_picture_files[$current_picture_file_position - 1]['size']);
+					$prev_picture['date'] = strftime($cfg['timeformat'], $current_picture_files[$current_picture_file_position - 1]['timestamp']);
 				}
 				//next
 				if ($current_picture_files_count == ($current_picture_file_position + 1)) {
@@ -515,7 +539,7 @@ else {
 					}
 					$tmpfilename = 't' . $cfg['next_previous_size'] . '_' . $next_name . '.jpg';
 					if (!file_exists($current_tmp_path . $tmpfilename)) {
-						$image = new Image_Toolbox($filesystem_current_path . $file);
+						$image = new Image_Toolbox($filesystem_current_path . $next_picture_file);
 						$image->newOutputSize($cfg['next_previous_size'], 0, false, true);
 						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
 						unset($image);
@@ -524,6 +548,8 @@ else {
 					$next_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $next_picture_file);
 					$next_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$next_picture['name'] = utf8_encode(samba2workaround($next_picture_file));
+					$next_picture['size'] = humansize($current_picture_files[$current_picture_file_position + 1]['size']);
+					$next_picture['date'] = strftime($cfg['timeformat'], $current_picture_files[$current_picture_file_position + 1]['timestamp']);
 				}
 				
 			}
@@ -553,6 +579,8 @@ else {
 	// display smarty template
 	$template->debugging = false;
 	$template->display('index.tpl');
-
+	
+	// reset umask
+	umask($oldumask);
 }
 ?>
