@@ -13,17 +13,13 @@
  * $Id$
  */
  
-$relpicpath = str_replace('__phpAutoGallery__jsLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
-$cssfile = substr($relpicpath, strrpos($relpicpath, '/'));
-$relpicpath = substr($relpicpath, 0, strrpos($relpicpath, '/')) . '/__phpAutoGallery/javascript' . $cssfile;
+$relpicpath = str_replace('__phpAutoGallery__jsLoader/', '__phpAutoGallery/', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
 
 $fullpicpath = str_replace($HTTP_SERVER_VARS['SCRIPT_NAME'], "", $HTTP_SERVER_VARS['SCRIPT_FILENAME']) . $relpicpath;
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';
 
-$headers = getallheaders();
-
-if ($headers['If-Modified-Since'] == $filedate) {
+if ($HTTP_SERVER_VARS['HTTP_IF_MODIFIED_SINCE'] == $filedate) {
 	header('HTTP/1.1 304 Not Modified');
 	exit;
 }

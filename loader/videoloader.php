@@ -2,7 +2,7 @@
 /**
  * videoloader.php -- wrapper for video files
  *
- * Copyright (C) 2003 Martin Theimer
+ * Copyright (C) 2003, 2004 Martin Theimer
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -23,9 +23,7 @@ $mime = $cfg['mime_types'][$ext];
 
 $filedate = gmdate("D, d M Y H:i:s", filemtime($fullpicpath)) . ' GMT';
 
-$headers = getallheaders();
-
-if ($headers['If-Modified-Since'] == $filedate) {
+if ($HTTP_SERVER_VARS['HTTP_IF_MODIFIED_SINCE'] == $filedate) {
 	header('HTTP/1.1 304 Not Modified');
 	exit;
 }
