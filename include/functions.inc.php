@@ -98,8 +98,28 @@ function getDirDirs($dirPath) {
                 }
         }
         closedir($handle);
-     }  
+     }
      return $dirArr;
+}
+
+function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
+	global $cfg, $web_pAG_path_rel;
+	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
+    	$dirPath.='/';
+    }
+    if ($handle = opendir($dirPath)) {
+        while (false !== ($file = readdir($handle))) {
+        	if (!in_array($file, $cfg['hide_folder']) && $file != "." && $file != ".." && $file != '__phpAutoGallery' && is_dir($dirPath.$file)) {
+                $name_prefix = "";
+                for ($i = 0; $i < $level; $i++) {
+                	$name_prefix .= "-";
+                }
+                $dirTree[] = array("prefix" => $name_prefix, "level" => $level, "name" => trim($file), "href" => $web_pAG_path_rel . $hrefPath . trim($file));
+                getDirTree($dirPath . trim($file), $dirTree, $level + 1, $hrefPath . trim($file) . '/');
+			}
+        }
+        closedir($handle);
+     }
 }
 
 function getDirPictureFiles($dirPath) {

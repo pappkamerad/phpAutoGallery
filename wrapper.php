@@ -107,6 +107,8 @@ else {
 		// get current directory's files and subdirectories
 		$current_files = getDirFiles($filesystem_current_path);
 		$current_dirs = getDirDirs($filesystem_current_path);
+		$whole_tree = array();
+		getDirTree($filesystem_root_path, $whole_tree);
 		$current_dir_bytecount = getDirBytes($filesystem_current_path);
 		$current_dir_bytecounttotal = getDirBytesTotal($filesystem_current_path);
 		
@@ -235,6 +237,7 @@ else {
 		
 		// assign smarty template variables
 		$template->assign('vCurrentDirName', $current_dir_name);
+		$template->assign('arrWholeTree', $whole_tree);
 		$template->assign('arrCurrentNav', $current_nav);
 		$template->assign('arrCurrentDirDirs', $current_dir_dirs);
 		$template->assign('arrCurrentDirFiles', $current_dir_files);
@@ -291,6 +294,8 @@ else {
 		// get current directory's files and subdirectories
 		$current_files = getDirFiles($filesystem_current_path);
 		$current_dirs = getDirDirs($filesystem_current_path);
+		$whole_tree = array();
+		getDirTree($filesystem_root_path, $whole_tree);
 		$current_picture_files = getDirPictureFiles($filesystem_current_path);
 		
 		// check supported extensions
@@ -447,6 +452,7 @@ else {
 		
 		// assign smarty variables
 		$template->assign('arrCurrentNav', $current_nav);
+		$template->assign('arrWholeTree', $whole_tree);
 		$template->assign('vCurrentPictureFilecount', $current_picture_files_count);
 		$template->assign('vCurrentPictureFilenumber', ($current_picture_file_position + 1));
 		$template->assign('arrCurrentPicture', $current_picture);
