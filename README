@@ -44,6 +44,7 @@ phpAutoGallery - Readme
   - Displays information about imagefiles and directories.
   - Easy to setup.
   - Fully customizable through the use of Smarty templates.
+  - Generates valid XHTML 1.0 Strict and CSS 2.0 code.
     
   Download:
     You can get the latest version at http://sourceforge.net/projects/phpautogallery
