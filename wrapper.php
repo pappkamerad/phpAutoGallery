@@ -134,16 +134,44 @@ else {
 			$whole_tree = array();
 			getDirTree($filesystem_root_path, $whole_tree);
 	
-			$current_dir_bytecount = getDirBytes($filesystem_current_path);
-			$current_dir_bytecounttotal = getDirBytesTotal($filesystem_current_path);
+			$dummy_ret1 = getDirSize($filesystem_current_path);
+			$dummy_ret2 = getDirSizeTotal($filesystem_current_path);
+			
+			$current_dir_info['name'] = $current_dir_name;
+			$current_dir_info['totalsize'] = humansize($dummy_ret2[2]);
+			$current_dir_info['totalfiles'] = $dummy_ret2[0];
+			$current_dir_info['totaldirs'] = $dummy_ret2[1];
+			$current_dir_info['size'] = humansize($dummy_ret1[2]);
+			$current_dir_info['files'] = $dummy_ret1[0];
+			$current_dir_info['dirs'] = $dummy_ret1[1];
+			$current_dir_info['totalpictures'] = $dummy_ret2[3];
+			$current_dir_info['totalvideos'] = $dummy_ret2[4];
+			$current_dir_info['totalothers'] = $dummy_ret2[5];
+			$current_dir_info['pictures'] = $dummy_ret1[3];
+			$current_dir_info['videos'] = $dummy_ret1[4];
+			$current_dir_info['others'] = $dummy_ret1[5];
+			$current_dir_info['date'] = strftime($cfg['timeformat'], filemtime($filesystem_current_path));
 			
 			$current_dir_dirs = array();
 			if (isset($current_dirs[0])) {
 				$i = 0;
 				foreach ($current_dirs as $dir) {
-					$current_dir_dirs[$i]['href'] = utf8_encode($web_pAG_path_rel . $url_request_part . $dir);
-					$current_dir_dirs[$i]['name'] = utf8_encode(samba2workaround($dir));
+					$current_dir_dirs[$i]['href'] = utf8_encode($web_pAG_path_rel . $url_request_part . $dir['name']);
+					$current_dir_dirs[$i]['name'] = utf8_encode(samba2workaround($dir['name']));
 					$current_dir_dirs[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_folder']);
+					$current_dir_dirs[$i]['totalsize'] = humansize($dir['totalsize']);
+					$current_dir_dirs[$i]['totalfiles'] = $dir['totalfiles'];
+					$current_dir_dirs[$i]['totaldirs'] = $dir['totaldirs'];
+					$current_dir_dirs[$i]['size'] = humansize($dir['size']);
+					$current_dir_dirs[$i]['files'] = $dir['files'];
+					$current_dir_dirs[$i]['dirs'] = $dir['dirs'];
+					$current_dir_dirs[$i]['totalpictures'] = $dir['totalpictures'];
+					$current_dir_dirs[$i]['totalvideos'] = $dir['totalvideos'];
+					$current_dir_dirs[$i]['totalothers'] = $dir['totalothers'];
+					$current_dir_dirs[$i]['pictures'] = $dir['pictures'];
+					$current_dir_dirs[$i]['videos'] = $dir['videos'];
+					$current_dir_dirs[$i]['others'] = $dir['others'];
+					$current_dir_dirs[$i]['date'] = strftime($cfg['timeformat'], $dir['timestamp']);
 					$i++;
 				}
 				$current_dir_dircount = sizeof($current_dir_dirs);
@@ -171,9 +199,9 @@ else {
 				$per_page_end = $per_page_start + $cfg['pics_per_page'];
 				
 				foreach ($current_files as $file) {
-					$ext = strtolower(substr($file, strrpos($file, '.') +1));
-					$name = substr($file, 0, strrpos($file, '.'));
-					if ($cfg['types'][$ext] == 1) {
+					$ext = strtolower(substr($file['name'], strrpos($file['name'], '.') +1));
+					$name = substr($file['name'], 0, strrpos($file['name'], '.'));
+					if (getFileType($file['name']) == 1) {
 						// pictures
 						$current_tmp_path = $cfg['tmp_path'] . $cfg['tmp_pAG_path'] . $web_pAG_path_abs . $web_current_path;
 						if (!file_exists($current_tmp_path)) {
@@ -181,7 +209,7 @@ else {
 						}
 						$tmpfilename = 't' . $cfg['thumb_size'] . '_' . $name . '.jpg';
 						if (!file_exists($current_tmp_path . $tmpfilename)) {
-							$image = new Image_Toolbox($filesystem_current_path . $file);
+							$image = new Image_Toolbox($filesystem_current_path . $file['name']);
 							$image->newOutputSize($cfg['thumb_size'], 0, false, true);
 							$image->setResizeMethod($cfg['thumbnail_resize_method']);
 							$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
@@ -197,34 +225,38 @@ else {
 							if ($current_dir_files[$i]['resized_width'] > $current_dir_files_widest) {
 								$current_dir_files_widest = $current_dir_files[$i]['resized_width'];
 							}
-							$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file);
-							$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file));
+							$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file['name']);
+							$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file['name']));
 							$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
+							$current_dir_files[$i]['size'] = humansize($file['size']);
+							$current_dir_files[$i]['date'] = strftime($cfg['timeformat'], $file['timestamp']);
 							$current_dir_files[$i]['type'] = 1;
 							$i++;
 						}
 						$current_dir_filecount[1]++;
 						$u++;
 					}
-					elseif ($cfg['types'][$ext] == 2) {
+					elseif (getFileType($file['name']) == 2) {
 						// video filetypes
-						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__videoLoader/' . $web_current_path . $file);
-						$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file));
+						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__videoLoader/' . $web_current_path . $file['name']);
+						$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file['name']));
 						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/' . $cfg['icon_video_' . $ext]);
+						$current_dir_files[$i]['size'] = humansize($file['size']);
+						$current_dir_files[$i]['date'] = strftime($cfg['timeformat'], $file['timestamp']);
 						$current_dir_files[$i]['type'] = 2;
 						$current_dir_filecount[2]++;
 						$i++;
 					}
 					else {
-						// other filetypes
-						if ($file != '.htaccess') {
-							$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__originalLoader/' . $web_current_path . $file);
-							$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file));
-							$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/other.gif');
-							$current_dir_files[$i]['type'] = 0;
-							$current_dir_filecount[0]++;
-							$i++;
-						}
+						// other valid filetypes (.txt files, etc...)
+						$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__originalLoader/' . $web_current_path . $file['name']);
+						$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file['name']));
+						$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoader/__phpAutoGallery/img/other.gif');
+						$current_dir_files[$i]['size'] = $file['size'];
+						$current_dir_files[$i]['date'] = $file['date'];
+						$current_dir_files[$i]['type'] = 0;
+						$current_dir_filecount[0]++;
+						$i++;
 					}
 				}
 				$current_dir_start_pic = $per_page_start + 1;
@@ -261,15 +293,12 @@ else {
 			}
 			
 			// assign smarty template variables
-			$template->assign('vCurrentDirName', $current_dir_name);
+			$template->assign('arrCurrentDirInfo', $current_dir_info);
 			$template->assign('arrWholeTree', $whole_tree);
 			$template->assign('arrCurrentNav', $current_nav);
 			$template->assign('arrCurrentDirDirs', $current_dir_dirs);
 			$template->assign('arrCurrentDirFiles', $current_dir_files);
 			$template->assign('arrCurrentDirFilecount', $current_dir_filecount);
-			$template->assign('vCurrentDirDircount', $current_dir_dircount);
-			$template->assign('vCurrentDirBytecount', $current_dir_bytecount);
-			$template->assign('vCurrentDirBytecountTotal', $current_dir_bytecounttotal);
 			$template->assign('arrCurrentDirFilesHighestHeight', $current_dir_files_highest);
 			$template->assign('arrCurrentDirFilesWidestWidth', $current_dir_files_widest);
 			$template->assign('vCurrentDirStartPic', $current_dir_start_pic);
