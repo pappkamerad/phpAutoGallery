@@ -1,0 +1,31 @@
+# htaccess-dist -- required .htaccess file
+# 
+# This is the required mod_rewrite configuration for phpAutoGallery.
+# Change <FULL_GALLERY_PATH> to the full filesystem path of your 
+# root gallery folder. (and where the __phpAutoGallery folder must
+# be located)
+# Then copy this file to the root path of your gallery and rename
+# it to '.htaccess' (default for the Apache 'AccessFileName' directive)
+#
+# Example:
+# RewriteRule .* /usr/local/apache/htdocs/mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]
+#
+# Copyright (C) 2003 Martin Theimer
+# Licensed under the GNU GPL. For full terms see the file COPYING.
+#
+# Contact: Martin Theimer <pappkamerad@decoded.net>
+#
+# The latest version of phpAutoGallery can be obtained from:
+# http://www.decoded.net/projects/phpAutoGallery
+#
+# $Id$
+
+RewriteEngine on
+
+RewriteRule .*__phpAutoGallery__picLoader/.* __phpAutoGallery/loader/picloader.php [L]
+RewriteRule .*__phpAutoGallery__picLoaderTmp/.* __phpAutoGallery/loader/picloadertmp.php [L]
+RewriteRule .*__phpAutoGallery__cssLoader/.* __phpAutoGallery/loader/cssloader.php [L]
+RewriteRule .*__phpAutoGallery__videoLoader/.* __phpAutoGallery/loader/videoloader.php [L]
+
+RewriteCond %{REQUEST_URI} !.*__phpAutoGallery/loader/[a-z]*\.php.*
+RewriteRule .* <FULL_GALLERY_PATH>/__phpAutoGallery/wrapper.php [NE,QSA,L]

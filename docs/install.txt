@@ -1,0 +1,50 @@
+$Id$
+
+phpAutoGallery
+
+Installation
+============
+
+  Requirements:
+    - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
+      (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
+       So overlaying of a logo image may not work correct with this version of PHP)
+    - mod_rewrite
+
+  Recommendations:
+  	- GD >= 2.0.1 (for high-quality resizing of the images)
+
+  Preface:
+    If your using the .htaccess file make sure that you are allowed to
+    override the necessary server configurations.
+    Apache: "AllowOverride FileInfo" - must be set at least.
+    
+  Quick Install:
+    1. Untar the distribution (be sure to untar the subdirectories)
+       tar -xzvf phpAutoGallery-x.x.x.tar.gz to the directory in your
+       webroot where you like the gallery to be.
+       The distribution consists of a htaccess file (with mod_rewrite
+       rules) and the "__phpAutoGallery" folder. Both must reside in the
+       root gallery folder.
+       (Note: DO NOT rename the "__phpAutoGallery" folder)
+    2. Rename the htaccess-dist file to ".htaccess"
+       (default for the Apache "AccessFileName" directive)
+    3. Edit the ".htaccess" file:
+       Change <FULL_GALLERY_PATH> to the full filesystem path of your
+       root gallery folder.
+       (Example: RewriteRule .* /usr/local/apache/htdocs/mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L])
+       --
+       Alternatively you can put the mod_rewrite rules in a your
+       Apache conf file. (e.g. <VirtualHost> or <Directory> context)
+       --
+    4. Have a look at the config/config.inc.php file and adjust
+       some settings if you like/need to.
+       At least make sure that the $cfg['tmp_path'] is ok for your
+       system. (default should be ok for linux servers)
+       
+    5. Put some pictures / create folders in your root gallery folder.
+       See if everything works fine by open your gallery in your browser.
+       (<www.your-host.com>/<your-install-dir>)
+    
+  Cheers,
+    Martin Theimer

@@ -1,0 +1,8 @@
+$Id$
+
+phpAutoGallery
+
+How to make your own templates for phpAutoGallery
+=================================================
+
+  to be written...
