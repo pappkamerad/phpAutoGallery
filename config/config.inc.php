@@ -125,5 +125,5 @@ $cfg['hide_file'] = array(
 // enable this setting.
 // phpAutoGallery then tries to convert the default samba "cp850"-charset to
 // the "ISO-8859-2"-charset.
-$cfg['samba_2_charset_workaround'] = true;
+$cfg['samba_2_charset_workaround'] = false;
 ?>
