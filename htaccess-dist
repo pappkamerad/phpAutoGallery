@@ -17,14 +17,14 @@
 # be located)
 #
 # Example 1:
-# if your gallery is located here:
+# if your gallery is accessible here:
 # "http://www.example.com/mygallery"
 # then <GALLERY_WEB_PATH> would be "/mygallery"
 # and the rewrite-rule would look like this:
 # "RewriteRule .* /mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]"
 #
 # Example 2:
-# or your gallery is located in the webroot directly:
+# or your gallery is accessible in the webroot directly:
 # "http://www.example.com"
 # then <GALLERY_WEB_PATH> would be "" (empty)
 # and the rewrite-rule would look like this:
@@ -33,10 +33,10 @@
 # Then copy this file to the root path of your gallery and rename
 # it to '.htaccess' (default for the Apache 'AccessFileName' directive)
 #
-#
 # If you have problems with the loading, you may try
 # to add this line:
 # RewriteBase <GALLERY_WEB_PATH>
+#
 RewriteEngine on
 
 RewriteCond %{REQUEST_URI} !.*__phpAutoGallery/wrapper\.php.*

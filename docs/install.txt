@@ -49,15 +49,15 @@ Installation
 	   be located)
 
 	   Example 1:
-	   if your gallery is located here:
-	   "http://www.example.com/mygallery"
+	   if your gallery is accessible here:
+	   "http://www.example.tld/mygallery"
 	   then <GALLERY_WEB_PATH> would be "/mygallery"
 	   and the rewrite-rule would look like this:
 	   "RewriteRule .* /mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]"
 
 	   Example 2:
-	   or your gallery is located in the webroot directly:
-	   "http://www.example.com"
+	   or your gallery is accessible in the webroot directly:
+	   "http://www.example.tld"
 	   then <GALLERY_WEB_PATH> would be "" (empty)
 	   and the rewrite-rule would look like this:
 	   "RewriteRule .* /__phpAutoGallery/wrapper.php [NE,QSA,L]"
@@ -80,7 +80,7 @@ Installation
        $cfg['admin']['username']
 	   $cfg['admin']['password']
 
-	5. Also have a look at the template specific config.inc.php file, located
+	5. Also have a look at the template specific template_config.inc.php file, located
 	   in templates/<TEMPLATE_NAME>/config/.
 	   Individial template-settings are stored in this file.
 
@@ -88,12 +88,15 @@ Installation
        See if everything works fine by open your gallery in your browser.
        (<www.your-host.com>/<your-install-dir>)
        
+       i.e. for the above mentioned example the URL would be:
+       "http://www.example.tld/mygallery/"
+       
     6. If everything works right, you can access a little admin interface
        at this URL:
        "http://<FULL_GALLERY_URL>/__phpAutoGallery__admin"
        
        i.e. for the above mentioned example the URL would be:
-       "http://www.example.com/mygallery/__phpAutoGallery__admin"
+       "http://www.example.tld/mygallery/__phpAutoGallery__admin"
        
        (NOTE: "__phpAutoGallery__admin" does NOT have to exist on your server.
        It is just a special name, that wrapper.php can recognise and act accordingly.)
