@@ -462,7 +462,7 @@ $pt = sprintf("%0.4f", $pt_end - $pt_start);
 $template->assign('vProcessingTime', $pt);
 
 // display smarty template
-$template->debugging = true;
+$template->debugging = false;
 $template->display('index.tpl');
 
 ?>
