@@ -1,0 +1,235 @@
+/**
+ * style.css -- template stylesheet
+ * template: decoded_green
+ *
+ * Copyright (C) 2003, 2004 Martin Theimer
+ * Licensed under the GNU GPL. For full terms see the file COPYING.
+ *
+ * Contact: Martin Theimer <pappkamerad@decoded.net>
+ *
+ * The latest version of phpAutoGallery can be obtained from:
+ * http://sourceforge.net/projects/phpautogallery
+ *
+ * $Id$
+ */
+body {
+	font-size:8pt;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	color:#000000;
+	font-weight:normal;
+	text-decoration:none;
+	background-color:#FBFBFB;
+}
+
+td { 
+	font-size:8pt;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	color:#000000;
+	font-weight:normal;
+	text-decoration:none;
+}
+
+td.headertd {
+	background-color:#EEEEEE;
+	border-width:1px;
+	border-bottom-width:0px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.infotd {
+	font-size:8pt;
+	background-color:#F5F5F5;
+	border-width:1px;
+	border-bottom-width:0px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.infotd2 {
+	font-size:8pt;
+	background-color:#EEEEEE;
+	border-width:1px;
+	border-top-width:0px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.infotd_bottom {
+	font-size:8pt;
+	background-color:#F5F5F5;
+	border-width:1px;
+	border-top-width:0px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.maintd {
+	background-color:#FAFAFA;
+	border-width:1px;
+	border-style:solid;
+	border-color:#DDDDDD;
+}
+
+td.third {
+	width:50%;
+}
+
+td.width_33 {
+	width:23%;
+}
+
+.greentext {
+	font-size:8pt;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	color:#5D8E00;
+	text-decoration:underline;
+}
+
+.dummy_link {
+	font-size:8pt;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	color:#000000;
+}
+
+a {
+	font-size:8pt;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	color:#5D8E00;
+	font-weight:bold;
+	text-decoration:none;
+}
+
+a:hover {
+	color:#81B61B;
+	text-decoration:underline;
+}
+
+.folder {
+	float:left;
+	padding:20px;
+	text-align:center;
+}
+
+.icon {
+	float:left;
+	padding:15px;
+	text-align:center;
+	border-width:1px;
+	border-style:solid;
+	border-color:#FAFAFA;
+	background-color:#EAEAEA;
+}
+
+.iconbg {
+	float:left;
+	padding-top:3px;
+	padding-left:5px;
+	text-align:center;
+}
+
+.iconbg2 {
+	float:right;
+	text-align:center;
+	padding-right:5px;
+	padding-top:3px;
+}
+
+.noborder {
+	border-width:0px;
+	border-style:none;
+}
+
+.iconvideo {
+	float:left;
+	padding:15px;
+	text-align:center;
+	border-width:1px;
+	border-style:solid;
+	border-color:#FAFAFA;
+	background-color:#FAFAFA;
+}
+
+.iconbgvideo {
+	float:left;
+	height:100px;
+	padding-top:3px;
+	padding-left:5px;
+	text-align:center;
+}
+
+.border {
+	border-width:1px;
+	border-style:solid;
+	border-color:#777777;
+}
+
+.description {
+	border-width:1px;
+	border-style:solid;
+	background-color:#F5F5F5;
+	border-color:#5D8E00;
+	padding:5px;
+	text-align:left;
+}
+
+.description_folder_ieworkaround {
+	border-width:0px;
+	border-style:none;
+	text-align:center;
+	width:100%;
+}
+
+.description_folder {
+	border-width:1px;
+	border-style:solid;
+	background-color:#F5F5F5;
+	border-color:#5D8E00;
+	padding:5px;
+	text-align:left;
+	width:50%;
+	margin:auto;
+}
+
+.error {
+	background-color:#FFAAAA;
+	border-color:#FF0000;
+	border-width:1px;
+	border-style:solid;
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+	font-weight:bold;
+	text-align:center;
+	padding:10px;
+	position:relative;
+}
+
+input {
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+}
+textarea {
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+	font-style:normal;
+}
+select {
+	font-family:Tahoma,Verdana,Arial,sans-serif;
+	font-size:8pt;
+	font-style:normal;
+}
+option.normal {
+	color:#000000;
+	background-color:#EEEEEE;
+	font-weight:normal;
+}
+option.bold {
+	color:#5D8E00;
+	background-color:#E0E0E0;
+	font-weight:bold;
+}
+option.root {
+	color:#FFFFFF;
+	background-color:#5D8E00;
+	font-weight:bold;
+}
