@@ -4,9 +4,9 @@ phpAutoGallery - Readme
 
   A auto-indexing image gallery written in PHP
 
-  Version 0.9.0 - 02/11/2003
+  Version 0.9.5 - 2004/07/24
   http://sourceforge.net/projects/phpautogallery  
-  Copyright (C) 2003 Martin Theimer <pappkamerad@decoded.net>
+  Copyright (C) 2003, 2004 Martin Theimer <pappkamerad@decoded.net>
   
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ phpAutoGallery - Readme
   - Displays information about imagefiles and directories.
   - Easy to setup.
   - Fully customizable through the use of Smarty templates.
+  - Folder- and picture-descriptions
+  - Admin-interface
   - Generates valid XHTML 1.0 Strict and CSS 2.0 code.
     
   Download:
@@ -60,7 +62,10 @@ phpAutoGallery - Readme
     Please see the docs/templates.txt file.
   
   ChangeLog:
-    Please see the Changelog file.
+    Please see the CHANGELOG file.
+  
+  Known Bugs:
+    Please see the BUGS file.
   
   Cheers,
 	Martin Theimer

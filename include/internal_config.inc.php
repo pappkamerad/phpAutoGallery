@@ -14,17 +14,19 @@
  *
  * $Id$
  */
-$cfg['version'] = '0.9.0';
-$cfg['copyright'] = 'Copyright &copy; 2003&nbsp;<a href="mailto:pappkamerad@decoded.net">Martin Theimer</a>';
+$cfg['version'] = '0.9.5';
+$cfg['copyright'] = 'Copyright &copy; 2003, 2004&nbsp;<a href="mailto:pappkamerad@decoded.net">Martin Theimer</a>';
 
 $cfg['wrapper_path'] = '__phpAutoGallery/wrapper.php';
 $cfg['tmp_pAG_path'] = 'phpAutoGallery/';
 
+// picture types:
 $cfg['types']['jpg'] = 1;
 $cfg['types']['jpeg'] = 1;
 $cfg['types']['gif'] = 1;
 $cfg['types']['png'] = 1;
 
+// video types:
 $cfg['types']['mov'] = 2;
 $cfg['types']['avi'] = 2;
 $cfg['types']['asf'] = 2;
@@ -32,7 +34,10 @@ $cfg['types']['wmv'] = 2;
 $cfg['types']['mpeg'] = 2;
 $cfg['types']['mpg'] = 2;
 
+// other types:
 $cfg['types']['txt'] = 0;
+$cfg['types']['html'] = 0;
+$cfg['types']['htm'] = 0;
 
 $cfg['mime_types']['avi'] = 'video/x-msvideo';
 $cfg['mime_types']['asf'] = 'video/x-msvideo';

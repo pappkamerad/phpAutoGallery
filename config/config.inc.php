@@ -2,7 +2,7 @@
 /**
  * config.inc.php -- configuration file for phpAutoGallery
  *
- * Copyright (C) 2003 Martin Theimer
+ * Copyright (C) 2003, 2004 Martin Theimer
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -13,9 +13,19 @@
  * $Id$
  */
  
-// cache path. phpAutoGallery will put its resized images here
+// cache path (IMPORTANT)
+// phpAutoGallery will use this folder for:
+// - thumbnails
+// - resized images
+// - smarty compile directory
+// - other infos...
 // folder must exist and be writeable by webserver-user!
 $cfg['tmp_path'] = '/var/tmp/';
+// example for windows:
+//$cfg['tmp_path'] = 'c:/temp/';
+
+// which template/skin to use
+$cfg['which_template'] = 'decoded_green';
 
 // the name of your gallery
 // shown as prefix for the html title
@@ -54,7 +64,7 @@ $cfg['jpeg_quality'] = 75;
 // and put the logo file in the __phpAutoGallery/img folder
 // leave empty for no logo/copyright
 // for transparency effects please use 24-bit png files
-$cfg['logo_image'] = 'teeeest.jpg';
+$cfg['logo_image'] = '';
 $cfg['logo_position_x'] = 'left +10';
 $cfg['logo_position_y'] = 'bottom -10';
 
@@ -68,29 +78,37 @@ $cfg['thumbnail_resize_method'] = 'resample';
 // directory listing page.
 $cfg['pics_per_page'] = 10;
 
-// sort blaaaaaaa. leave blank for no sorting...
+// specify how the directories and files get sorted
+// possible values: 'name', 'date' or 'size'
 $cfg['sort_value'] = 'name';
+// specifiy the sort order
+// possible values: 'ASC' (for ascending) and
+// 'DESC' (for descending)
 $cfg['sort_order'] = 'ASC';
 
-// blaaa
+// You can specify the format of date/time-displays here
+// it uses strftime-syntax
+// information about the syntax:
+// http://www.php.net/manual/en/function.strftime.php
 $cfg['timeformat'] = "%Y/%m/%d - %H:%M";
-$cfg['locale'] = 'DE_de';
+// region setting for timedisplay.
+// leave empty for system default value.
+// information about possible values:
+// http://www.php.net/manual/en/function.setlocale.php
+//$cfg['locale'] = 'de_DE';
 
-// blaaa
+// set the filename suffix for description files
+// (i.e. 'desc' > description in: 'mypicture.desc')
 $cfg['description_extension'] = 'desc';
+// set the filename prefix for folder description files
+// (suffix will be $cfg['description_extension'])
+// (i.e. '_folder' > description in: '_folder.desc')
 $cfg['folder_description_name'] = '_folder';
 
-// admin stuff
+// username and password for the administration tool
 $cfg['admin']['username'] = 'admin';
+// CHANGE the this password!
 $cfg['admin']['password'] = 'pwd';
-
-// filennames of the different icons used buy phpAutoGallery
-$cfg['icon_folder'] = 'folder.png';
-$cfg['icon_video_mpg'] = 'video.png';
-$cfg['icon_video_mov'] = 'video.png';
-$cfg['icon_video_asf'] = 'video.png';
-$cfg['icon_video_avi'] = 'video.png';
-$cfg['icon_video_wmv'] = 'video.png';
 
 // hide specific foldernames / filenames (case sensitiv)
 $cfg['hide_folder'] = array(

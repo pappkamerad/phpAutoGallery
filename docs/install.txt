@@ -15,12 +15,12 @@ Installation
   	- GD >= 2.0.1 (for high-quality resizing of the images)
 
   Preface:
-    If your using the .htaccess file make sure that you are allowed to
+	If your using the .htaccess file make sure that you are allowed to
     override the necessary server configurations.
     Apache: "AllowOverride FileInfo" - must be set at least.
     
-  Quick Install:
-    1. Untar the distribution (be sure to untar the subdirectories)
+  Install:
+	1. Untar the distribution (be sure to untar the subdirectories)
        tar -xzvf phpAutoGallery-x.x.x.tar.gz to a directory named 
        "__phpAutoGallery" (without the quotes) in your
        webroot where you like the gallery to be.
@@ -28,25 +28,78 @@ Installation
        rules) and the "__phpAutoGallery" folder. Both must reside in the
        root gallery folder.
        (Note: DO NOT use another name for the "__phpAutoGallery" folder)
+    
     2. Copy the htaccess-dist file one directory up. (to the root gallery folder)
+    
     2. Rename the htaccess-dist file to ".htaccess"
        (default for the Apache "AccessFileName" directive)
+       
+       Directory-layout should be something like this:
+	   /path/to/docroot/mygallery/
+	   /path/to/docroot/mygallery/__phpAutoGallery/
+	   /path/to/docroot/mygallery/.htaccess
+	   /path/to/docroot/mygallery/somepicture.jpg
+	   /path/to/docroot/mygallery/some picture folder
+	   /path/to/docroot/mygallery/some picture folder/another_picture.jpg
+	   ... etc ...
+    
     3. Edit the ".htaccess" file:
-       Change <FULL_GALLERY_PATH> to the full filesystem path of your
-       root gallery folder.
-       (Example: RewriteRule .* /usr/local/apache/htdocs/mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L])
+	   Change <GALLERY_WEB_PATH> to the full url path of your 
+	   root gallery folder. (and where the __phpAutoGallery folder must
+	   be located)
+
+	   Example 1:
+	   if your gallery is located here:
+	   "http://www.example.com/mygallery"
+	   then <GALLERY_WEB_PATH> would be "/mygallery"
+	   and the rewrite-rule would look like this:
+	   "RewriteRule .* /mygallery/__phpAutoGallery/wrapper.php [NE,QSA,L]"
+
+	   Example 2:
+	   or your gallery is located in the webroot directly:
+	   "http://www.example.com"
+	   then <GALLERY_WEB_PATH> would be "" (empty)
+	   and the rewrite-rule would look like this:
+	   "RewriteRule .* /__phpAutoGallery/wrapper.php [NE,QSA,L]"
+       
+       If you have problems with the loading, you may try
+	   to add this line:
+	   "RewriteBase <GALLERY_WEB_PATH>"
+       
        --
        Alternatively you can put the mod_rewrite rules in your
        Apache conf file. (e.g. <VirtualHost> or <Directory> context)
        --
+    
     4. Have a look at the config/config.inc.php file and adjust
        some settings if you like/need to.
-       At least make sure that the $cfg['tmp_path'] is ok for your
-       system. (default should be ok for linux servers)
+       At least take a look at $cfg['tmp_path']. Verify that it exsits and
+       that the apache user has write permissions in that folder.
        
+       IMPORTANT: Also change the username and password for the admin interface!
+       $cfg['admin']['username']
+	   $cfg['admin']['password']
+
+	5. Also have a look at the template specific config.inc.php file, located
+	   in templates/<TEMPLATE_NAME>/config/.
+	   Individial template-settings are stored in this file.
+
     5. Put some pictures / create folders in your root gallery folder.
        See if everything works fine by open your gallery in your browser.
        (<www.your-host.com>/<your-install-dir>)
+       
+    6. If everything works right, you can access a little admin interface
+       at this URL:
+       "http://<FULL_GALLERY_URL>/__phpAutoGallery__admin"
+       
+       i.e. for the above mentioned example the URL would be:
+       "http://www.example.com/mygallery/__phpAutoGallery__admin"
+       
+       (NOTE: "__phpAutoGallery__admin" does NOT have to exist on your server.
+       It is just a special name, that wrapper.php can recognise and act accordingly.)
     
+       If the currently used template is configured to show a admin-link on every page, than you can access
+       the admin interface any time, by just clicking the link.
+       
   Cheers,
     Martin Theimer
