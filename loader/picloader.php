@@ -12,9 +12,6 @@
  *
  * $Id$
  */
- 
-require_once ('../config/config.inc.php');
-require_once ('../include/internal_config.inc.php');
 
 $relpicpath = utf8_decode(str_replace('__phpAutoGallery__picLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI'])));
 

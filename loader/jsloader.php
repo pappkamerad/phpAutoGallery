@@ -13,9 +13,6 @@
  * $Id$
  */
  
-require_once ('../config/config.inc.php');
-require_once ('../include/internal_config.inc.php');
-
 $relpicpath = str_replace('__phpAutoGallery__jsLoader/', '', urldecode($HTTP_SERVER_VARS['REQUEST_URI']));
 $cssfile = substr($relpicpath, strrpos($relpicpath, '/'));
 $relpicpath = substr($relpicpath, 0, strrpos($relpicpath, '/')) . '/__phpAutoGallery/javascript' . $cssfile;
