@@ -20,20 +20,20 @@
 
 	<tr>
 		<td class="maintd" align="center">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+			<table width="100%" cellspacing="0" cellpadding="0">
 				<tr>
-					<td align="center" valign="top">
+					<td class="third" align="left" valign="top">
 						<table border="0">
 							<tr>
 								<td valign="bottom">
 								{if $arrPrevPicture.href != ""}
-									<div class="iconbg" style="width:{math equation="x + y" x=$arrPrevPicture.resized_width y=37};px">
+									<div class="iconbg" style="width:{math equation="x + y" x=$arrPrevPicture.resized_width y=37}px;">
 										<div class="icon" onclick="window.location.href='{$arrPrevPicture.href}';" onmouseover="this.style.borderColor='#81B61B';this.style.cursor='hand';" onmouseout="this.style.borderColor='#FAFAFA';this.style.backgroundColor='#EAEAEA'">
-											<a href="{$arrPrevPicture.href}"><img src="{$arrPrevPicture.img}" alt="{$arrPrevPicture.name}" class="border" width="{$arrPrevPicture.resized_width}" height="{$arrPrevPicture.resized_height}"></a>
+											<a href="{$arrPrevPicture.href}"><img src="{$arrPrevPicture.img}" alt="{$arrPrevPicture.name}" class="border" width="{$arrPrevPicture.resized_width}" height="{$arrPrevPicture.resized_height}"/></a>
 										</div>
 									</div>
 								{else}
-									<div class="iconbg2" style="width:{math equation="x + y" x=$arrNextPicture.resized_width y=37};px">
+									<div class="iconbg2" style="width:{math equation="x + y" x=$arrNextPicture.resized_width y=37}px;">
 										&nbsp;
 									</div>
 								{/if}
@@ -51,20 +51,20 @@
 						</table>
 					</td>
 					<td align="center">
-						<img src="{$arrCurrentPicture.img}" class="border" width="{$arrCurrentPicture.resized_width}" height="{$arrCurrentPicture.resized_height}">
+						<img src="{$arrCurrentPicture.img}" class="border" width="{$arrCurrentPicture.resized_width}" height="{$arrCurrentPicture.resized_height}" alt="{$arrCurrentPicture.name}"/>
 					</td>
-					<td align="center" valign="top">
+					<td class="third" align="right" valign="top">
 						<table border="0">
 							<tr>
 								<td valign="bottom">
 								{if $arrNextPicture.href != ""}
-									<div class="iconbg2" style="width:{math equation="x + y" x=$arrNextPicture.resized_width y=37};px">
+									<div class="iconbg2" style="width:{math equation="x + y" x=$arrNextPicture.resized_width y=37}px;">
 										<div class="icon" onclick="window.location.href='{$arrNextPicture.href}';" onmouseover="this.style.borderColor='#81B61B';this.style.cursor='hand';" onmouseout="this.style.borderColor='#FAFAFA';this.style.backgroundColor='#EAEAEA'">
-											<a href="{$arrNextPicture.href}"><img src="{$arrNextPicture.img}" alt="{$arrNextPicture.name}" class="border" width="{$arrNextPicture.resized_width}" height="{$arrNextPicture.resized_height}"></a>
+											<a href="{$arrNextPicture.href}"><img src="{$arrNextPicture.img}" alt="{$arrNextPicture.name}" class="border" width="{$arrNextPicture.resized_width}" height="{$arrNextPicture.resized_height}"/></a>
 										</div>
 									</div>
 								{else}
-									<div class="iconbg2" style="width:{math equation="x + y" x=$arrPrevPicture.resized_width y=37};px">
+									<div class="iconbg2" style="width:{math equation="x + y" x=$arrPrevPicture.resized_width y=37}px;">
 										&nbsp;
 									</div>
 								{/if}
@@ -108,7 +108,7 @@
 	
 	<tr>
 		<td align="center" class="infotd2">
-			<b>Picture info:</b><br>Name: <b>{$arrCurrentPicture.name}</b><br>Original size: <b>{$arrCurrentPicture.info.width}&nbsp;x&nbsp;{$arrCurrentPicture.info.height}</b><br>Filesize: <b>{$arrCurrentPicture.info.filesize}</b><br>Processing Time: <b>{$vProcessingTime}&nbsp;sec.</b>
+			<b>Picture info:</b><br/>Name: <b>{$arrCurrentPicture.name}</b><br/>Original size: <b>{$arrCurrentPicture.info.width}&nbsp;x&nbsp;{$arrCurrentPicture.info.height}</b><br/>Filesize: <b>{$arrCurrentPicture.info.filesize}</b><br/>Processing Time: <b>{$vProcessingTime}&nbsp;sec.</b>
 		</td>
 	</tr>
 {/strip}

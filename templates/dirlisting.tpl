@@ -68,7 +68,7 @@
 			{section name=i loop=$arrCurrentDirDirs}
 					<div class="iconbgvideo">
 						<div class="iconvideo" onclick="window.location.href='{$arrCurrentDirDirs[i].href}'" onmouseover="this.style.borderColor='#81B61B';this.style.backgroundColor='#F2F2F2';this.style.cursor='hand';" onmouseout="this.style.borderColor='#FAFAFA';this.style.backgroundColor='#FAFAFA';">
-							<a href="{$arrCurrentDirDirs[i].href}"><img src="{$arrCurrentDirDirs[i].img}" border="0" alt="{$arrCurrentDirDirs[i].name}" width="48" height="48"><br>{$arrCurrentDirDirs[i].name}</a>
+							<a href="{$arrCurrentDirDirs[i].href}"><img src="{$arrCurrentDirDirs[i].img}" alt="{$arrCurrentDirDirs[i].name}" class="noborder" width="48" height="48"/><br/>{$arrCurrentDirDirs[i].name}</a>
 						</div>
 					</div>
 			{/section}
@@ -79,9 +79,9 @@
 			{* pictures *}
 			{section name=i loop=$arrCurrentDirFiles}
 				{if $arrCurrentDirFiles[i].type == 1}
-					<div class="iconbg" style="height:{math equation="x + y" x=$arrCurrentDirFilesHighestHeight y=50};px">
+					<div class="iconbg" style="height:{math equation="x + y" x=$arrCurrentDirFilesHighestHeight y=50}px;">
 						<div class="icon" onclick="window.location.href='{$arrCurrentDirFiles[i].href}'" onmouseover="this.style.borderColor='#81B61B';this.style.cursor='hand'" onmouseout="this.style.borderColor='#FAFAFA';this.style.backgroundColor='#EAEAEA'">
-							<a href="{$arrCurrentDirFiles[i].href}" title="{$arrCurrentDirFiles[i].name}"><img src="{$arrCurrentDirFiles[i].img}" border="0" alt="{$arrCurrentDirFiles[i].name}" class="border" width="{$arrCurrentDirFiles[i].resized_width}" height="{$arrCurrentDirFiles[i].resized_height}"></a>
+							<a href="{$arrCurrentDirFiles[i].href}" title="{$arrCurrentDirFiles[i].name}"><img src="{$arrCurrentDirFiles[i].img}" alt="{$arrCurrentDirFiles[i].name}" class="border" width="{$arrCurrentDirFiles[i].resized_width}" height="{$arrCurrentDirFiles[i].resized_height}"/></a>
 						</div>
 					</div>
 				{/if}
@@ -100,7 +100,7 @@
 				{if $arrCurrentDirFiles[i].type == 2}
 					<div class="iconbgvideo">
 						<div class="iconvideo" onclick="window.location.href='{$arrCurrentDirFiles[i].href}'" onmouseover="this.style.borderColor='#81B61B';this.style.backgroundColor='#F2F2F2';this.style.cursor='hand';" onmouseout="this.style.borderColor='#FAFAFA';this.style.backgroundColor='#FAFAFA';">
-							<a href="{$arrCurrentDirFiles[i].href}" title="{$arrCurrentDirFiles[i].name}"><img src="{$arrCurrentDirFiles[i].img}" border="0" alt="{$arrCurrentDirFiles[i].name}"><br>{$arrCurrentDirFiles[i].name}</a>
+							<a href="{$arrCurrentDirFiles[i].href}" title="{$arrCurrentDirFiles[i].name}"><img src="{$arrCurrentDirFiles[i].img}" class="noborder" alt="{$arrCurrentDirFiles[i].name}"/><br/>{$arrCurrentDirFiles[i].name}</a>
 						</div>
 					</div>
 				{/if}
@@ -151,7 +151,7 @@
 	
 	<tr>
 		<td align="center" class="infotd2">
-			<b>Directory info:</b><br>Name: <b>{$vCurrentDirName}</b><br>Size: <b>{$vCurrentDirBytecount}</b> / <b>{$vCurrentDirBytecountTotal}</b><br>Subdirectories: <b>{$vCurrentDirDircount}</b><br>Pictures: <b>{$arrCurrentDirFilecount[1]}</b><br>Videos: <b>{$arrCurrentDirFilecount[2]}</b><br>Processing Time: <b>{$vProcessingTime}&nbsp;sec.</b>
+			<b>Directory info:</b><br/>Name: <b>{$vCurrentDirName}</b><br/>Size: <b>{$vCurrentDirBytecount}</b> / <b>{$vCurrentDirBytecountTotal}</b><br/>Subdirectories: <b>{$vCurrentDirDircount}</b><br/>Pictures: <b>{$arrCurrentDirFilecount[1]}</b><br/>Videos: <b>{$arrCurrentDirFilecount[2]}</b><br/>Processing Time: <b>{$vProcessingTime}&nbsp;sec.</b>
 		</td>
 	</tr>
 

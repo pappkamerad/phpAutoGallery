@@ -15,7 +15,7 @@
 
 <tr>
 	<td align="center">
-		Indexed&nbsp;by&nbsp;<a href="http://www.decoded.net/" target="_blank">phpAutoGallery</a>&nbsp;v{$vVersion}<br>{$vCopyright}
+		Indexed&nbsp;by&nbsp;<a href="http://www.decoded.net/">phpAutoGallery</a>&nbsp;v{$vVersion}<br/>{$vCopyright}
 	</td>
 </tr>
 </table>

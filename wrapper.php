@@ -21,6 +21,9 @@ require_once ('./smarty/Smarty.class.php');
 
 $pt_start = getmicrotime();
 
+// standard HTTP header
+header('Content-Type: text/html; charset=utf-8');
+
 // no script timeout. (thumb generation may take some time)
 set_time_limit(0);
 
