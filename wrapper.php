@@ -2,7 +2,7 @@
 /**
  * wrapper.php -- main script for phpAutoGallery
  *
- * Copyright (C) 2003 Martin Theimer
+ * Copyright (C) 2003, 2004 Martin Theimer
  * Licensed under the GNU GPL. For full terms see the file COPYING.
  *
  * Contact: Martin Theimer <pappkamerad@decoded.net>
@@ -35,13 +35,26 @@ else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__jsLoader/')) {
 else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__videoLoader/')) {
 	include ('loader/videoloader.php');
 }
+else if (strstr($_SERVER["REQUEST_URI"],'__phpAutoGallery__phpLoader/')) {
+	session_start();
+	list($d1, $d2) = explode("?", $_SERVER["REQUEST_URI"]);
+	$phpfilename = substr($d1, (strrpos($d1, "/") + 1));
+	include ('php/' . $phpfilename);
+}
 else {
 	// standard wrapper
 	
-	$pt_start = getmicrotime();
-	
 	// standard HTTP header
 	header('Content-Type: text/html; charset=utf-8');
+	
+	// session stuff
+	session_start();
+	if (isset($_SESSION['pAG']['__admin'])) {
+		//echo "admin mode<br>";
+	}
+	/////////////////////////////
+	
+	$pt_start = getmicrotime();
 	
 	// no script timeout. (thumb generation may take some time)
 	set_time_limit(0);
@@ -54,12 +67,15 @@ else {
 		$filesystem_root_path = $cfg['override_root_path'];
 	}
 	else {
-		$filesystem_root_path = realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT']) . '/';
+		$filesystem_root_path = str_replace("\\", "/", realpath($HTTP_SERVER_VARS['DOCUMENT_ROOT'])) . '/';
 	}
-	$filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME']));
+	$filesystem_pAG_path_abs = str_replace($cfg['wrapper_path'], '', str_replace("\\", "/", realpath($HTTP_SERVER_VARS['SCRIPT_FILENAME'])));
 	$filesystem_pAG_path_rel = '/' . str_replace($filesystem_root_path, '', $filesystem_pAG_path_abs);
 	$web_pAG_path_abs = $HTTP_SERVER_VARS['SERVER_NAME'] . $filesystem_pAG_path_rel;
 	$web_pAG_path_rel = $filesystem_pAG_path_rel;
+	
+	//echo "root_path:".$filesystem_root_path."<br>";
+	//echo 'redirect_url: '.$HTTP_SERVER_VARS['REDIRECT_URL'].'<br>';
 	
 	if ($HTTP_SERVER_VARS['REDIRECT_URL'] . '/' === $web_pAG_path_rel) {
 		// special root dir without trailing slash
@@ -97,6 +113,7 @@ else {
 				$url_request_part .= '/';
 			}
 			$filesystem_current_path = $filesystem_pAG_path_abs . $url_request_part;
+			//echo 'file: '.$filesystem_current_path.'<br>';
 			$web_current_path = $url_request_part;
 	
 			// get navigation path array
@@ -132,7 +149,7 @@ else {
 			$current_files = getDirFiles($filesystem_current_path);
 			$current_dirs = getDirDirs($filesystem_current_path);
 			$whole_tree = array();
-			getDirTree($filesystem_root_path, $whole_tree);
+			getDirTree($filesystem_pAG_path_abs, $whole_tree);
 	
 			$dummy_ret1 = getDirSize($filesystem_current_path);
 			$dummy_ret2 = getDirSizeTotal($filesystem_current_path);
@@ -151,6 +168,17 @@ else {
 			$current_dir_info['videos'] = $dummy_ret1[4];
 			$current_dir_info['others'] = $dummy_ret1[5];
 			$current_dir_info['date'] = strftime($cfg['timeformat'], filemtime($filesystem_current_path));
+			
+			// description
+			if ($cfg['override_root_path']) {
+				$descfilename = realpath(substr($cfg['override_root_path'], 0, -1) . $web_current_path) . $name . '.' . $cfg['description_extension'];
+			}
+			else {
+				$descfilename = $filesystem_current_path . $cfg['folder_description_name'] . '.' . $cfg['description_extension'];
+			}
+			if (file_exists($descfilename)) {
+				$current_dir_info['description'] = loadTextFile($descfilename);
+			}
 			
 			$current_dir_dirs = array();
 			if (isset($current_dirs[0])) {
@@ -349,7 +377,7 @@ else {
 			$current_files = getDirFiles($filesystem_current_path);
 			$current_dirs = getDirDirs($filesystem_current_path);
 			$whole_tree = array();
-			getDirTree($filesystem_root_path, $whole_tree);
+			getDirTree($filesystem_pAG_path_abs, $whole_tree);
 			$current_picture_files = getDirPictureFiles($filesystem_current_path);
 			
 			// check supported extensions
@@ -393,8 +421,10 @@ else {
 						$image = new Image_Toolbox($filesystem_current_path . $file);
 						$image->newOutputSize($width, 0, false, false);
 						if ($cfg['logo_image'] != '') {
-							$image->addImage($filesystem_pAG_path_abs . '__phpAutoGallery/img/' . $cfg['logo_image']);
-							$image->blend($cfg['logo_position_x'], $cfg['logo_position_y']);
+							if (file_exists($filesystem_pAG_path_abs . '__phpAutoGallery/img/' . $cfg['logo_image'])) {
+								$image->addImage($filesystem_pAG_path_abs . '__phpAutoGallery/img/' . $cfg['logo_image']);
+								$image->blend($cfg['logo_position_x'], $cfg['logo_position_y']);
+							}
 						}
 						$image->save($current_tmp_path . $tmpfilename, 'jpg', $cfg['jpeg_quality']);
 						@chmod($current_tmp_path . $tmpfilename, 0777);
@@ -406,6 +436,16 @@ else {
 					
 					$current_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$current_picture['name'] = utf8_encode(samba2workaround($file));
+					// description
+					if ($cfg['override_root_path']) {
+						$descfilename = realpath(substr($cfg['override_root_path'], 0, -1) . $web_current_path) . $name . '.' . $cfg['description_extension'];
+					}
+					else {
+    					$descfilename = $HTTP_SERVER_VARS['DOCUMENT_ROOT'] . $web_pAG_path_rel . $web_current_path . $name . '.' . $cfg['description_extension'];
+					}
+					if (file_exists($descfilename)) {
+						$current_picture['description'] = loadTextFile($descfilename);
+					}
 				}
 				else {
 					$current_picture['name'] = utf8_encode(samba2workaround($file));
@@ -457,7 +497,7 @@ else {
 					$prev_picture_file = '';
 				}
 				else {
-					$prev_picture_file = $current_picture_files[$current_picture_file_position - 1];
+					$prev_picture_file = $current_picture_files[$current_picture_file_position - 1]['name'];
 					$prev_name = substr($prev_picture_file, 0, strrpos($prev_picture_file, '.'));
 					$current_tmp_path = $cfg['tmp_path'] . $cfg['tmp_pAG_path'] . $web_pAG_path_abs . $web_current_path;
 					if (!file_exists($current_tmp_path)) {
@@ -483,7 +523,7 @@ else {
 					$next_picture_file = '';
 				}
 				else {
-					$next_picture_file = $current_picture_files[$current_picture_file_position + 1];
+					$next_picture_file = $current_picture_files[$current_picture_file_position + 1]['name'];
 					$next_name = substr($next_picture_file, 0, strrpos($next_picture_file, '.'));
 					$current_tmp_path = $cfg['tmp_path'] . $cfg['tmp_pAG_path'] . $web_pAG_path_abs . $web_current_path;
 					if (!file_exists($current_tmp_path)) {
