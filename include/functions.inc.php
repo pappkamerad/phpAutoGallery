@@ -71,7 +71,7 @@ function samba2workaround($str) {
 
 function getArrayPosition(&$array, $searchvalue) {
 	foreach ($array as $key => $value) {
-		if ($value === $searchvalue) {
+		if ($value['name'] === $searchvalue) {
 			return $key;
 		}
 	}
@@ -94,7 +94,40 @@ function getmicrotime() {
 	return ((float)$usec + (float)$sec); 
 }
 
+function getDirPictureFiles($dirPath) {
+	global $cfg;
+	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
+    	$dirPath.='/';
+    }
+	if ($handle = opendir($dirPath)) {
+		while (false !== ($file = readdir($handle))) {
+			if (isValidFile($file, 1, 1) && !is_dir($dirPath.$file)) {
+				$filesArr[] = array (
+					"name" => trim($file),
+					"size" => filesize($dirPath.$file),
+					"timestamp" => filemtime($dirPath.$file),
+					"filetype" => getFileType($file)
+				);
+			}
+		}
+		// sort
+		if (is_array($filesArr)) {
+			if ($cfg['sort_value']) {
+				usort($filesArr, "cmp");
+			}
+			return $filesArr;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+
 function getDirFiles($dirPath) {
+	global $cfg;
 	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
@@ -104,13 +137,16 @@ function getDirFiles($dirPath) {
 				$filesArr[] = array (
 					"name" => trim($file),
 					"size" => filesize($dirPath.$file),
-					"timestamp" => filemtime($dirPath.$file)
+					"timestamp" => filemtime($dirPath.$file),
+					"filetype" => getFileType($file)
 				);
 			}
 		}
 		// sort
 		if (is_array($filesArr)) {
-			usort($filesArr, "cmp");
+			if ($cfg['sort_value']) {
+				usort($filesArr, "cmp");
+			}
 			return $filesArr;
 		}
 		else {
@@ -292,6 +328,7 @@ function isValidFile($file, $type = 1, $ext = false) {
 }
 
 function getDirDirs($dirPath) {
+	global $cfg;
 	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
     	$dirPath.='/';
     }
@@ -320,7 +357,9 @@ function getDirDirs($dirPath) {
 		}
 		// sort
 		if (is_array($dirArr)) {
-			usort($dirArr, "cmp");
+			if ($cfg['sort_value']) {
+				usort($dirArr, "cmp");
+			}
 			return $dirArr;
 		}
 		else {
@@ -338,17 +377,27 @@ function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
     	$dirPath.='/';
     }
 	
+	// root gallery dir:
+	$dirTree[0] = array(
+    	"class" => "root",
+    	"prefix" => "",
+    	"active" => $active,
+    	"level" => (integer)$level,
+    	"name" => $cfg['root_folder_name'],
+    	"filename" => "",
+    	"href" => utf8_encode($web_pAG_path_rel)
+    );
+	
 	$all_valid_items = getDirDirs($dirPath);
 	if ($all_valid_items !== false) {
 		foreach ($all_valid_items as $entry) {
 			$file = $entry['name'];
-            $name_prefix = "";
+            $name_prefix = "-";
             for ($i = 0; $i < $level; $i++) {
             	$name_prefix .= "-";
             }
-            if ($level > 0) {
-            	$name_prefix .= "&nbsp;";
-            }
+           	$name_prefix .= "&nbsp;";
+
             // check if active
             $active = 0;
             if ($hrefPath . trim($file) . "/" == $web_current_path) {
@@ -375,27 +424,6 @@ function getDirTree($dirPath, &$dirTree, $level = 0, $hrefPath = "") {
 	}
 }
 
-function getDirPictureFiles($dirPath) {
-	global $cfg;
-	if (strlen($dirPath)!=(strrpos($dirPath, '/'))+1) {
-    	$dirPath.='/';
-    }
-    if ($handle = opendir($dirPath)) {
-    	while (false !== ($file = readdir($handle))) {
-        	if (!in_array($file, $cfg['hide_file']) && $file != "." && $file != ".." && $file != '__phpAutoGallery' && !is_dir($dirPath.$file)) {
-        		$file = trim($file);
-        		$ext = strtolower(substr($file, strrpos($file, '.') +1));
-				if ($cfg['types'][$ext] == 1) {
-					$filesArr[] = $file;	
-				}
-        	}
-        }
-		closedir($handle);
-	}  
-	return $filesArr;
-}
-
-
 function createTmpDirs($tmproot, $fullpath) {
 	if ($fullpath != '') {
 		$dirs = explode('/', $fullpath);
@@ -413,5 +441,16 @@ function createTmpDirs($tmproot, $fullpath) {
 			}
 		}
 	}
+}
+
+function loadTextFile($file) {
+	$text = "";
+	$linearray = file($file);
+	if (is_array($linearray)) {
+		foreach ($linearray as $line) {
+			$text .= rtrim($line).'<br/>';
+		}
+	}
+	return $text;
 }
 ?>
