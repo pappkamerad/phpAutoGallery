@@ -20,7 +20,7 @@
  *
  * @author Martin Theimer <pappkamerad@decoded.net>
  * @copyright Copyright (C) 2003 Martin Theimer
- * @version 1.0.1
+ * @version 1.1.0
  * @package Image_Toolbox
  * @link http://sourceforge.net/projects/image-toolbox
  */
@@ -70,7 +70,7 @@ if (!defined('IMAGE_TOOLBOX_BLEND_OVERLAY')) {
  * @copyright 2003, Martin Theimer
  * @package Image_Toolbox
  * @link http://sourceforge.net/projects/image-toolbox
- * @version 1.0.2
+ * @version 1.1.0
  */
 class Image_Toolbox {
 
@@ -672,7 +672,6 @@ class Image_Toolbox {
 					trigger_error($this->_error_prefix . 'Imagetype ('.$this->_types[$output_type]['ext'].') not supported for creating/writing.', E_USER_ERROR);
 					return null;
 				}
-				header ('Content-type: ' . $this->_types[$output_type]['mime']);
 				imagepng($this->_img['main']['resource'], $filename);
 				break;
 				
@@ -715,6 +714,8 @@ class Image_Toolbox {
      * <ul>
      * <li>'resize' -> supported by every version of GD (fast but ugly resize of image)</li>
      * <li>'resample' -> only supported by GD version >= 2.0 (slower but antialiased resize of image)</li>
+     * <li>'workaround' -> supported by every version of GD (workaround function for bicubic resizing, downsizing, VERY slow!, taken from php.net comments)</li>
+     * <li>'workaround2' -> supported by every version of GD (alternative workaround function for bicubic resizing, down- and upsizing, VERY VERY slow!, taken from php.net comments)</li>
      * </ul>
      *
      * @param string|integer $method resize method
@@ -738,6 +739,22 @@ class Image_Toolbox {
 				$this->_resize_function = 'imagecopyresampled';
 				break;
 				
+			case 3:
+			case '3':
+			case 'resample_workaround':
+			case 'workaround':
+			case 'bicubic':
+				$this->_resize_function = '$this->_imageCopyResampledWorkaround';
+				break;
+				
+			case 4:
+			case '4':
+			case 'resample_workaround2':
+			case 'workaround2':
+			case 'bicubic2':
+				$this->_resize_function = '$this->_imageCopyResampledWorkaround2';
+				break;
+				
 			default:
 				trigger_error($this->_error_prefix . 'Resizemethod not supported.', E_USER_ERROR);
 				return null;
@@ -752,8 +769,12 @@ class Image_Toolbox {
      *
      * if $height = 0 the new height will be calculated from the $width value preserving the correct aspectratio.<br>
      *
-     * if $crop is set to true the image will be cropped if necessary to preserve the aspectratio and avoid image distortions.<br>
-     * (default = false)
+     * $mode can be one of the following:<br>
+     * <ul>
+     * <li>0 -> image will be resized to the new output size, regardless of the original aspectratio. (default)</li>
+     * <li>1 -> image will be cropped if necessary to preserve the aspectratio and avoid image distortions.</li>
+     * <li>2 -> image will be resized preserving its original aspectratio. differences to the new outputsize will be filled with $bgcolor</li>
+     * </ul>
      *
      * if $autorotate is set to true the given $width and $height values may "change place" if the given image bias is different from the original one.<br>
      * if either $width or $height is 0, the new size will be applied to either the new width or the new height based on the bias value of the original image.<br>
@@ -761,14 +782,15 @@ class Image_Toolbox {
      *
      * @param integer $width new width of image
      * @param integer $height new height of image
-     * @param bool $crop use image cropping
+     * @param integer $mode resize mode
      * @param bool $autorotate use autorotating
+     * @param string $bgcolor background fillcolor (hexformat, e.g. '#FF0000')
      * @return bool true on success, otherwise false
      */
-	function newOutputSize($width, $height, $crop = false, $autorotate = false) {
+	function newOutputSize($width, $height, $mode = 0, $autorotate = false, $bgcolor = '#000000') {
 		if ($width > 0 && $height > 0 && is_int($width) && is_int($height)) {
 			//ignore aspectratio
-			if (!$crop) {
+			if (!$mode) {
 				//do not crop to get correct aspectratio
 				($width >= $height) ? ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_HORIZONTAL) : ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_VERTICAL);
 				if ($this->_img['main']['bias'] == $this->_img['target']['bias'] || !$autorotate) {
@@ -784,7 +806,7 @@ class Image_Toolbox {
 				$cpy_h = $this->_img['main']['height'];
 				$cpy_w_offset = 0;
 				$cpy_h_offset = 0;
-			} else {
+			} elseif ($mode == 1) {
 				//crop to get correct aspectratio
 				($width >= $height) ? ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_HORIZONTAL) : ($this->_img['target']['bias'] = IMAGE_TOOLBOX_BIAS_VERTICAL);
 				if ($this->_img['main']['bias'] == $this->_img['target']['bias'] || !$autorotate) {
@@ -808,14 +830,34 @@ class Image_Toolbox {
 					$cpy_w_offset = 0;
 				}
 			}
+			elseif ($mode == 2) {
+				//fill remaining background with a color to keep aspectratio
+				$final_aspectratio = $width / $height;
+				if ($final_aspectratio < $this->_img['main']['aspectratio']) {
+					$this->_img['target']['width'] = $width;
+					$this->_img['target']['height'] = (integer) $width / $this->_img['main']['aspectratio'];
+					$cpy_w_offset2 = 0;
+					$cpy_h_offset2 = (integer) (($height - $this->_img['target']['height']) / 2);
+				}
+				else {
+					$this->_img['target']['height'] = $height;
+					$this->_img['target']['width'] = (integer) $height * $this->_img['main']['aspectratio'];
+					$cpy_h_offset2 = 0;
+					$cpy_w_offset2 = (integer) (($width - $this->_img['target']['width']) / 2);
+				}
+				$this->_img['target']['aspectratio'] = $this->_img['main']['aspectratio'];
+				$cpy_w = $this->_img['main']['width'];
+				$cpy_h = $this->_img['main']['height'];
+				$cpy_w_offset = 0;
+				$cpy_h_offset = 0;
+			}
 		} elseif (($width == 0 && $height > 0) || ($width > 0 && $height == 0) && is_int($width) && is_int($height)) {
 			//keep aspectratio
 			if ($autorotate == true) {
 				if ($this->_img['main']['bias'] == IMAGE_TOOLBOX_BIAS_HORIZONTAL && $width > 0) {
 					$height = $width;
 					$width = 0;
-				}
-				elseif ($this->_img['main']['bias'] == IMAGE_TOOLBOX_BIAS_VERTICAL && $height > 0) {
+				} elseif ($this->_img['main']['bias'] == IMAGE_TOOLBOX_BIAS_VERTICAL && $height > 0) {
 					$width = $height;
 					$height = 0;
 				}
@@ -843,10 +885,22 @@ class Image_Toolbox {
 		$functionname = $this->_imagecreatefunction;
 		$dummy = $functionname($this->_img['target']['width'] + 1, $this->_img['target']['height'] + 1);
 		eval($this->_resize_function . '($dummy, $this->_img["main"]["resource"], 0, 0, $cpy_w_offset, $cpy_h_offset, $this->_img["target"]["width"], $this->_img["target"]["height"], $cpy_w, $cpy_h);');
-		$this->_img['target']['resource'] = $functionname($this->_img['target']['width'], $this->_img['target']['height']);
-		imagecopy($this->_img['target']['resource'], $dummy, 0, 0, 0, 0, $this->_img['target']['width'], $this->_img['target']['height']);
+		if ($mode == 2) {
+			$this->_img['target']['resource'] = $functionname($width, $height);
+			$fillcolor = $this->_hexToPHPColor($bgcolor);
+            imagefill($this->_img['target']['resource'], 0, 0, $fillcolor);
+		} else {
+			$this->_img['target']['resource'] = $functionname($this->_img['target']['width'], $this->_img['target']['height']);
+			$cpy_w_offset2 = 0;
+			$cpy_h_offset2 = 0;
+		}
+		imagecopy($this->_img['target']['resource'], $dummy, $cpy_w_offset2, $cpy_h_offset2, 0, 0, $this->_img['target']['width'], $this->_img['target']['height']);
 		imagedestroy($dummy);
 		
+		if ($mode == 2) {
+			$this->_img['target']['width'] = $width;
+            $this->_img['target']['height'] = $height;
+        }
 		//update _img['main'] with new data
 		foreach ($this->_img['target'] as $key => $value) {
 			$this->_img['main'][$key] = $value;
@@ -1228,7 +1282,7 @@ class Image_Toolbox {
 	function addText($text, $font, $size, $color, $x, $y, $angle = 0) {
 		global $HTTP_SERVER_VARS;
 		
-		if (substr($font, 0, 1) == DIRECTORY_SEPARATOR) {
+		if (substr($font, 0, 1) == DIRECTORY_SEPARATOR || (substr($font, 1, 1) == ":" && (substr($font, 2, 1) == "\\" || substr($font, 2, 1) == "/"))) {
 			$prepath = '';
 		} else {
 			$prepath = substr($HTTP_SERVER_VARS['SCRIPT_FILENAME'], 0, strrpos($HTTP_SERVER_VARS['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR;
@@ -1277,4 +1331,72 @@ class Image_Toolbox {
 		return true;
 	}
 	
+	/**
+     * workaround function for bicubic resizing. works well for downsizing only. VERY slow. taken from php.net comments
+     *
+     * @access private
+     */	
+	function _imageCopyResampledWorkaround(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h) {
+		/*
+		for ($i = 0; $i < imagecolorstotal($src_img); $i++)
+		{
+			$colors = ImageColorsForIndex ($src_img, $i);
+			ImageColorAllocate ($dst_img, $colors['red'],$colors['green'], $colors['blue']);
+		}
+		*/
+		$scaleX = ($src_w - 1) / $dst_w;
+		$scaleY = ($src_h - 1) / $dst_h;
+
+		$scaleX2 = $scaleX / 2.0;
+		$scaleY2 = $scaleY / 2.0;
+
+		for ($j = $src_y; $j < $src_y + $dst_h; $j++) {
+			$sY = $j * $scaleY;
+			for ($i = $src_x; $i < $src_x + $dst_w; $i++) {
+				$sX = $i * $scaleX;
+
+				$c1 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int) $sX, (int) $sY + $scaleY2));
+				$c2 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int) $sX, (int) $sY));
+				$c3 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int) $sX + $scaleX2, (int) $sY + $scaleY2));
+				$c4 = ImageColorsForIndex($src_img, ImageColorAt($src_img, (int) $sX + $scaleX2, (int) $sY));
+
+				$red = (integer) (($c1['red'] + $c2['red'] + $c3['red'] + $c4['red']) / 4);
+				$green = (integer) (($c1['green'] + $c2['green'] + $c3['green'] + $c4['green']) / 4);
+				$blue = (integer) (($c1['blue'] + $c2['blue'] + $c3['blue'] + $c4['blue']) / 4);
+
+				$color = ImageColorClosest ($dst_img, $red, $green,$blue);
+				ImageSetPixel ($dst_img, $dst_x + $i - $src_x, $dst_y + $j - $src_y,$color);
+			}
+		}
+	}
+
+	/**
+     * alternative workaround function for bicubic resizing. works well for downsizing and upsizing. VERY VERY slow. taken from php.net comments
+     *
+     * @access private
+     */	
+	function _imageCopyResampledWorkaround2(&$dst_img, &$src_img, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h) {
+		ImagePaletteCopy ($dst_img, $src_img);
+		$rX = $src_w / $dst_w;
+		$rY = $src_h / $dst_h;
+		$w = 0;
+		for ($y = $dst_y; $y < $dst_h; $y++) {
+			$ow = $w; $w = round(($y + 1) * $rY);
+			$t = 0;
+			for ($x = $dst_x; $x < $dst_w; $x++) {
+				$r = $g = $b = 0; $a = 0;
+				$ot = $t; $t = round(($x + 1) * $rX);
+				for ($u = 0; $u < ($w - $ow); $u++) {
+					for ($p = 0; $p < ($t - $ot); $p++) {
+						$c = ImageColorsForIndex ($src_img, ImageColorAt ($src_img, $ot + $p, $ow + $u));
+						$r += $c['red'];
+						$g += $c['green'];
+						$b += $c['blue'];
+						$a++;
+					}
+				}
+				ImageSetPixel ($dst_img, $x, $y, ImageColorClosest ($dst_img, $r / $a, $g / $a, $b / $a)); 
+			}
+		}
+	} 
 }
