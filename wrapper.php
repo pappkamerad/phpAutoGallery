@@ -242,7 +242,7 @@ else {
 			if (isset($current_files[0])) { 
 				$i = 0;
 				$u = 0;
-				if (!isset($_GET['offset'])) {
+				if (!$_GET['offset']) {
 					$per_page_start = 0;
 				}
 				else {
@@ -277,7 +277,7 @@ else {
 							if ($current_dir_files[$i]['resized_width'] > $current_dir_files_widest) {
 								$current_dir_files_widest = $current_dir_files[$i]['resized_width'];
 							}
-							$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file['name']);
+							$current_dir_files[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file['name']) . '?offset=' . $_GET['offset'];
 							$current_dir_files[$i]['name'] = utf8_encode(samba2workaround($file['name']));
 							$current_dir_files[$i]['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 							$current_dir_files[$i]['size'] = humansize($file['size']);
@@ -396,6 +396,7 @@ else {
 					$current_nav[($i + 1)]['href'] .= utf8_encode($nav_dummy[$u] . '/');
 				}
 			}
+			$current_nav[$i]['href'] .= '?offset=' . $_GET['offset'];
 			
 			// get current directory's files and subdirectories
 			$current_files = getDirFiles($filesystem_current_path);
@@ -483,7 +484,7 @@ else {
 						$view_size_links[$i]['name'] = utf8_encode($cfg['view_sizes'][$view_size]);
 					}
 					else {
-						$view_size_links[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?size=' . $view_size);
+						$view_size_links[$i]['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?size=' . $view_size) . '&offset=' . $_GET['offset'];
 						$view_size_links[$i]['name'] = utf8_encode($cfg['view_sizes'][$view_size]);
 					}
 					$i++;
@@ -497,7 +498,7 @@ else {
 						$view_original_link['allowed'] = true;
 					}
 					else {
-						$view_original_link['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?orig=1');
+						$view_original_link['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $file . '?orig=1') . '&offset=' . $_GET['offset'];
 						$view_original_link['name'] = 'original';
 						$view_original_link['allowed'] = true;
 					}
@@ -531,7 +532,13 @@ else {
 						unset($image);
 					}
 					list($prev_picture['resized_width'], $prev_picture['resized_height']) = getimagesize($current_tmp_path . $tmpfilename);
-					$prev_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $prev_picture_file);
+					if (($current_picture_file_position) == $_GET['offset']) {
+						$prev_offset = $_GET['offset'] - $cfg['pics_per_page'];
+					}
+					else {
+						$prev_offset = $_GET['offset'];
+					}
+					$prev_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $prev_picture_file) . '?offset=' . $prev_offset;
 					$prev_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$prev_picture['name'] = utf8_encode(samba2workaround($prev_picture_file));
 					$prev_picture['size'] = humansize($current_picture_files[$current_picture_file_position - 1]['size']);
@@ -559,7 +566,13 @@ else {
 						unset($image);
 					}
 					list($next_picture['resized_width'], $next_picture['resized_height']) = getimagesize($current_tmp_path . $tmpfilename);
-					$next_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $next_picture_file);
+					if (($current_picture_file_position + 1) == ($_GET['offset'] + $cfg['pics_per_page'])) {
+						$next_offset = $_GET['offset'] + $cfg['pics_per_page'];
+					}
+					else {
+						$next_offset = $_GET['offset'];
+					}
+					$next_picture['href'] = utf8_encode($web_pAG_path_rel . $web_current_path . $next_picture_file) . '?offset=' . $next_offset;
 					$next_picture['img'] = utf8_encode($web_pAG_path_rel . '__phpAutoGallery__picLoaderTmp/' . $web_pAG_path_abs . $web_current_path . $tmpfilename);
 					$next_picture['name'] = utf8_encode(samba2workaround($next_picture_file));
 					$next_picture['size'] = humansize($current_picture_files[$current_picture_file_position + 1]['size']);

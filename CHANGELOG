@@ -9,6 +9,7 @@ CHANGELOG
 		  (thanks to kalvan for pointing that out)
 		- changed some more detection stuff, so it should be compatible
 		  with the CGI version of PHP.
+		- phpAutoGallery now knows on which view-page the user was.
 		  
 	0.9.5
 		- changed the htaccess rewrite-rules.
