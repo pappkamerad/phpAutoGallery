@@ -37,6 +37,5 @@
 {/section}
 		</td>
 	</tr>
-
 {/strip}
 {* end of template *}
