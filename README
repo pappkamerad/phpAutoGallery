@@ -1,42 +1,40 @@
-$Id$
+phpAutoGallery
 
-phpAutoGallery - Readme
+A auto-indexing image gallery written in PHP
 
-  A auto-indexing image gallery written in PHP
+Version 0.9.6 - 2004/07/26
+http://sourceforge.net/projects/phpautogallery
+Copyright (C) 2003, 2004 Martin Theimer <pappkamerad@decoded.net>
 
-  Version 0.9.6 - 2004/07/26
-  http://sourceforge.net/projects/phpautogallery  
-  Copyright (C) 2003, 2004 Martin Theimer <pappkamerad@decoded.net>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License <http://www.opensource.org/gpl-license.html>
+for more details.
+
+Requirements: 
+  - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
+    (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
+      So overlaying of a logo image may not work correct with this version of PHP)
+  - apache with mod_rewrite
   
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License <http://www.opensource.org/gpl-license.html>
-  for more details.
-
-  Requirements: 
-    - PHP >= 4.0.6+, (tested with 4.3.3) with GD support
-      (Note: imagecopymerge() doesn't work correct in PHP 4.3.2 - BugID: 24816.
-       So overlaying of a logo image may not work correct with this version of PHP)
-    - apache with mod_rewrite
-    
-  Recommendations:
-  	- GD >= 2.0.1 (for high-quality resizing of the images)
-    
-  Summary:
-    Just upload your photos and pictures to a gallery folder
-    on a webserver and phpAutoGallery will do the rest.
-    Point your webbrowser to a path in your gallery:
-    http://yourgallery.example.com/lastvacation
-    or directly to a certain picture:
-    http://yourgallery.example.com/lastvacation/my_babe.jpg
-    and the request will transparently be forwarded to phpAutoGallery.
-    
-  Current Features:
+Recommendations:
+  - GD >= 2.0.1 (for high-quality resizing of the images)
+  
+Summary:
+  Just upload your photos and pictures to a gallery folder
+  on a webserver and phpAutoGallery will do the rest.
+  Point your webbrowser to a path in your gallery:
+  http://yourgallery.example.com/lastvacation
+  or directly to a certain picture:
+  http://yourgallery.example.com/lastvacation/my_babe.jpg
+  and the request will transparently be forwarded to phpAutoGallery.
+  
+Current Features:
   - Application fully transparent to gallery-enduser
   - On-the-fly creation and caching of thumbnails, resized fullsize images, directory listings
   - Configurable view sizes for fullsize-image display
@@ -47,25 +45,25 @@ phpAutoGallery - Readme
   - Folder- and picture-descriptions
   - Admin-interface
   - Generates valid XHTML 1.0 Strict and CSS 2.0 code.
-    
-  Download:
-    You can get the latest version at http://sourceforge.net/projects/phpautogallery
-    
-  Credits:
-  	This work was inspired by Apache::Gallery by Michael Legart
-  	A auto-indexing gallery written as a mod_perl module.
-  	
-  Installation:
-    Please see the docs/install.txt file.
   
-  Customizing:
-    Please see the docs/templates.txt file.
+Download:
+  You can get the latest version at http://sourceforge.net/projects/phpautogallery
   
-  ChangeLog:
-    Please see the CHANGELOG file.
+Credits:
+  This work was inspired by Apache::Gallery by Michael Legart
+  A auto-indexing gallery written as a mod_perl module.
   
-  Known Bugs:
-    Please see the BUGS file.
-  
-  Cheers,
-	Martin Theimer
+Installation:
+  Please see the docs/install.txt file.
+
+Customizing:
+  Please see the docs/templates.txt file.
+
+ChangeLog:
+  Please see the CHANGELOG file.
+
+Known Bugs:
+  Please see the BUGS file.
+
+Cheers,
+Martin Theimer
